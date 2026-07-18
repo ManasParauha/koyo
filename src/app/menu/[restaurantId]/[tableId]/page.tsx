@@ -1,4 +1,6 @@
 import React from 'react'
+import { createClient } from '@/lib/supabase/server'
+import { AddButton } from './AddButton'
 
 interface PageProps {
   params: Promise<{
@@ -10,14 +12,211 @@ interface PageProps {
 export default async function MenuPage({ params }: PageProps) {
   const { restaurantId, tableId } = await params
 
+  const supabase = await createClient()
+
+  // 1. Fetch restaurant
+  const { data: restaurant, error: restaurantError } = await supabase
+    .from('restaurants')
+    .select('name, upi_id')
+    .eq('id', restaurantId)
+    .single()
+
+  if (restaurantError || !restaurant) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#0f0f0f] text-white font-sans">
+        <div className="max-w-md w-full bg-[#181818] border border-[#222222] p-8 rounded-xl text-center space-y-6 shadow-2xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 text-[#ff4d4d] border border-red-500/20">
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl font-semibold tracking-tight text-white">Restaurant Not Found</h1>
+            <p className="text-[#a8a8a8] text-sm leading-relaxed">
+              We couldn't locate this restaurant. Please double check the QR code link.
+            </p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  // 2. Fetch table & verify it belongs to restaurantId
+  const { data: table, error: tableError } = await supabase
+    .from('tables')
+    .select('table_number, restaurant_id')
+    .eq('id', tableId)
+    .single()
+
+  if (tableError || !table || table.restaurant_id !== restaurantId) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#0f0f0f] text-white font-sans">
+        <div className="max-w-md w-full bg-[#181818] border border-[#222222] p-8 rounded-xl text-center space-y-6 shadow-2xl">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 text-[#ff4d4d] border border-red-500/20">
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl font-semibold tracking-tight text-white">Invalid Table QR Code</h1>
+            <p className="text-[#a8a8a8] text-sm leading-relaxed">
+              This table link is invalid or doesn't belong to {restaurant.name}. Please scan the table's QR code again.
+            </p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  // 3. Fetch menu items where is_available = true
+  const { data: menuItems, error: menuItemsError } = await supabase
+    .from('menu_items')
+    .select('id, name, description, price, category, image_url, is_available, is_veg')
+    .eq('restaurant_id', restaurantId)
+    .eq('is_available', true)
+    .order('category', { ascending: true })
+    .order('name', { ascending: true })
+
+  // Render empty state if there are no menu items
+  const hasMenuItems = menuItems && menuItems.length > 0
+
+  // Group menu items by category
+  type MenuItem = NonNullable<typeof menuItems>[number]
+  const menuByCategory: Record<string, MenuItem[]> = {}
+  if (menuItems && menuItems.length > 0) {
+    for (const item of menuItems) {
+      if (!menuByCategory[item.category]) {
+        menuByCategory[item.category] = []
+      }
+      menuByCategory[item.category].push(item)
+    }
+  }
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+    }).format(price)
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-zinc-950 text-zinc-100">
-      <div className="max-w-md text-center space-y-4">
-        <h1 className="text-4xl font-extrabold tracking-tight text-indigo-500">Menu Page</h1>
-        <p className="text-zinc-400">
-          Welcome to Koyo. You are viewing the menu for restaurant <span className="font-mono text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">{restaurantId}</span> at table <span className="font-mono text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">{tableId}</span>.
-        </p>
-      </div>
-    </main>
+    <div className="min-h-screen bg-[#0f0f0f] text-[#a8a8a8] font-sans pb-16 flex flex-col">
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-4 sm:px-6">
+        <div className="flex items-center space-x-3 max-w-[80%]">
+          <span className="font-semibold text-white text-base sm:text-lg tracking-tight truncate">
+            {restaurant.name}
+          </span>
+          <span className="text-[#666666] flex-shrink-0">|</span>
+          <span className="text-white text-xs font-semibold bg-[#181818] border border-[#222222] px-2 py-0.5 rounded-md flex-shrink-0">
+            Table {table.table_number}
+          </span>
+        </div>
+        <div className="text-[11px] font-semibold tracking-wider text-[#888888] uppercase bg-[#222222] px-2.5 py-1 rounded-full">
+          Menu
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8">
+        {!hasMenuItems || menuItemsError ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#181818] border border-[#222222] text-[#888888] mb-4">
+              <svg className="w-8 h-8 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-medium text-white tracking-tight mb-2">Menu coming soon</h2>
+            <p className="text-sm text-[#888888] max-w-sm leading-relaxed">
+              We are currently preparing our digital menu for this location. Please check back shortly!
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-12">
+            {Object.keys(menuByCategory).map((category) => (
+              <section key={category} className="space-y-6">
+                <div className="flex items-center space-x-3 border-b border-[#1a1a1a] pb-2">
+                  <div className="w-1.5 h-6 bg-[#0007cd] rounded-sm" />
+                  <h2 className="text-lg font-semibold text-white tracking-tight">
+                    {category}
+                  </h2>
+                  <span className="text-xs text-[#666666] bg-[#181818] px-2 py-0.5 rounded-md border border-[#222222]">
+                    {menuByCategory[category].length}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {menuByCategory[category].map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex gap-4 p-4 bg-[#181818] border border-[#222222] rounded-xl hover:border-[#333333] transition-all duration-200"
+                    >
+                      <div className="flex-1 flex flex-col justify-between min-w-0">
+                        <div className="space-y-1">
+                          <div className="flex items-center space-x-2">
+                            {/* Veg/Non-veg Indicator following Indian Convention */}
+                            {item.is_veg ? (
+                              <span
+                                className="inline-flex items-center justify-center border border-emerald-600 p-[2px] rounded-[3px] w-4 h-4 bg-emerald-950/10 flex-shrink-0"
+                                title="Veg"
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                              </span>
+                            ) : (
+                              <span
+                                className="inline-flex items-center justify-center border border-red-800 p-[2px] rounded-[3px] w-4 h-4 bg-red-950/10 flex-shrink-0"
+                                title="Non-Veg"
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-700" />
+                              </span>
+                            )}
+                            <h3 className="font-medium text-white text-base tracking-tight truncate">
+                              {item.name}
+                            </h3>
+                          </div>
+                          {item.description && (
+                            <p className="text-xs text-[#a8a8a8] line-clamp-2 leading-relaxed">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3">
+                          <span className="text-sm font-semibold text-white tracking-wide">
+                            {formatPrice(Number(item.price))}
+                          </span>
+                          <AddButton />
+                        </div>
+                      </div>
+
+                      {/* Image or Placeholder */}
+                      <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-[#0f0f0f] border border-[#222222]">
+                        {item.image_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#181818] to-[#222222] text-[#666666]">
+                            <svg className="w-8 h-8 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
   )
 }
+
