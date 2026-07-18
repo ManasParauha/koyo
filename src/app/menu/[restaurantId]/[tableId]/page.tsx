@@ -1,6 +1,8 @@
 import React from 'react'
 import { createClient } from '@/lib/supabase/server'
-import { AddButton } from './AddButton'
+import { MenuItemCard } from './MenuItemCard'
+import { HeaderCartBadge } from './HeaderCartBadge'
+import { CartBottomBar } from './CartBottomBar'
 
 interface PageProps {
   params: Promise<{
@@ -92,16 +94,8 @@ export default async function MenuPage({ params }: PageProps) {
     }
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 2,
-    }).format(price)
-  }
-
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#a8a8a8] font-sans pb-16 flex flex-col">
+    <div className="min-h-screen bg-[#0f0f0f] text-[#a8a8a8] font-sans pb-28 flex flex-col relative">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center space-x-3 max-w-[80%]">
@@ -113,9 +107,7 @@ export default async function MenuPage({ params }: PageProps) {
             Table {table.table_number}
           </span>
         </div>
-        <div className="text-[11px] font-semibold tracking-wider text-[#888888] uppercase bg-[#222222] px-2.5 py-1 rounded-full">
-          Menu
-        </div>
+        <HeaderCartBadge />
       </header>
 
       {/* Main Content */}
@@ -148,67 +140,7 @@ export default async function MenuPage({ params }: PageProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {menuByCategory[category].map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex gap-4 p-4 bg-[#181818] border border-[#222222] rounded-xl hover:border-[#333333] transition-all duration-200"
-                    >
-                      <div className="flex-1 flex flex-col justify-between min-w-0">
-                        <div className="space-y-1">
-                          <div className="flex items-center space-x-2">
-                            {/* Veg/Non-veg Indicator following Indian Convention */}
-                            {item.is_veg ? (
-                              <span
-                                className="inline-flex items-center justify-center border border-emerald-600 p-[2px] rounded-[3px] w-4 h-4 bg-emerald-950/10 flex-shrink-0"
-                                title="Veg"
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              </span>
-                            ) : (
-                              <span
-                                className="inline-flex items-center justify-center border border-red-800 p-[2px] rounded-[3px] w-4 h-4 bg-red-950/10 flex-shrink-0"
-                                title="Non-Veg"
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full bg-red-700" />
-                              </span>
-                            )}
-                            <h3 className="font-medium text-white text-base tracking-tight truncate">
-                              {item.name}
-                            </h3>
-                          </div>
-                          {item.description && (
-                            <p className="text-xs text-[#a8a8a8] line-clamp-2 leading-relaxed">
-                              {item.description}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex items-center justify-between pt-3">
-                          <span className="text-sm font-semibold text-white tracking-wide">
-                            {formatPrice(Number(item.price))}
-                          </span>
-                          <AddButton />
-                        </div>
-                      </div>
-
-                      {/* Image or Placeholder */}
-                      <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-[#0f0f0f] border border-[#222222]">
-                        {item.image_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={item.image_url}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#181818] to-[#222222] text-[#666666]">
-                            <svg className="w-8 h-8 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    <MenuItemCard key={item.id} item={item} />
                   ))}
                 </div>
               </section>
@@ -216,7 +148,11 @@ export default async function MenuPage({ params }: PageProps) {
           </div>
         )}
       </main>
+
+      {/* Sticky Bottom Bar */}
+      <CartBottomBar />
     </div>
   )
 }
+
 
