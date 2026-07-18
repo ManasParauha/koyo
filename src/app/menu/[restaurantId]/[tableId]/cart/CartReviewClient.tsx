@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart, PaymentMode } from '@/context/CartContext'
 
@@ -25,8 +25,24 @@ export function CartReviewClient({
     totalPrice,
     totalItems,
     paymentMode,
-    setPaymentMode
+    setPaymentMode,
+    clearCart
   } = useCart()
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [orderPlaced, setOrderPlaced] = useState(false)
+
+  // Clear the cart only when the component unmounts after a successful order.
+  // This prevents the visual flashing of the 'Your cart is empty' screen
+  // while Next.js is transitioning to the confirmation page.
+  useEffect(() => {
+    return () => {
+      if (orderPlaced) {
+        clearCart()
+      }
+    }
+  }, [orderPlaced, clearCart])
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -36,18 +52,43 @@ export function CartReviewClient({
     }).format(price)
   }
 
-  const handlePlaceOrder = () => {
-    if (!paymentMode) return
+  const handlePlaceOrder = async () => {
+    if (!paymentMode || isSubmitting) return
 
-    console.log('--- Place Order Tapped ---')
-    console.log('Restaurant:', restaurantName, `(ID: ${restaurantId})`)
-    console.log('Table Number:', tableNumber, `(ID: ${tableId})`)
-    console.log('Cart Items:', cart)
-    console.log('Payment Mode:', paymentMode)
-    console.log('Total Price:', totalPrice)
-    console.log('---------------------------')
+    setIsSubmitting(true)
+    setError(null)
 
-    alert(`Order placed successfully!\nPayment Mode: ${paymentMode}\nCheck browser console for full details.`)
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          restaurantId,
+          tableId,
+          payment_mode: paymentMode,
+          items: cart.map((item) => ({
+            menu_item_id: item.menu_item_id,
+            quantity: item.quantity,
+            notes: item.notes || '',
+          })),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong while placing your order.')
+      }
+
+      // Success: set orderPlaced to true to trigger cleanup on unmount, then navigate
+      setOrderPlaced(true)
+      router.push(`/menu/${restaurantId}/${tableId}/confirmation/${data.orderId}`)
+    } catch (err: any) {
+      setError(err.message || 'Failed to place order. Please try again.')
+      setIsSubmitting(false)
+    }
   }
 
   // Render Empty State
@@ -135,8 +176,9 @@ export function CartReviewClient({
       <header className="sticky top-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center space-x-3 max-w-[80%]">
           <button
-            onClick={() => router.push(`/menu/${restaurantId}/${tableId}`)}
-            className="text-white hover:text-[#a8a8a8] transition-colors p-1 -ml-1 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#1a26ff] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f] rounded-md outline-none cursor-pointer"
+            onClick={() => !isSubmitting && router.push(`/menu/${restaurantId}/${tableId}`)}
+            disabled={isSubmitting}
+            className="text-white hover:text-[#a8a8a8] transition-colors p-1 -ml-1 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#1a26ff] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f] rounded-md outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Go back to menu"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -154,6 +196,16 @@ export function CartReviewClient({
 
       {/* Main Review Section */}
       <main className="flex-1 max-w-2xl w-full mx-auto px-4 sm:px-6 py-6 space-y-8">
+        {/* Error Banner */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-[#ff4d4d] px-4 py-3 rounded-lg text-sm flex items-start space-x-2 animate-fadeIn">
+            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span className="font-medium">{error}</span>
+          </div>
+        )}
+
         {/* Cart Items Card */}
         <section className="space-y-4">
           <h2 className="text-sm font-bold text-white tracking-wider uppercase">Your Items</h2>
@@ -175,8 +227,9 @@ export function CartReviewClient({
                   <div className="flex-shrink-0 flex items-center bg-[#222222] border border-[#333333] rounded-md h-8 overflow-hidden">
                     <button
                       type="button"
+                      disabled={isSubmitting}
                       onClick={() => updateQuantity(item.menu_item_id, -1)}
-                      className="flex items-center justify-center w-8 h-full text-white hover:bg-[#2a2a2a] active:bg-[#333333] transition-colors duration-150 focus:outline-none cursor-pointer"
+                      className="flex items-center justify-center w-8 h-full text-white hover:bg-[#2a2a2a] active:bg-[#333333] transition-colors duration-150 focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       aria-label={`Decrease quantity of ${item.name}`}
                     >
                       <span className="text-lg leading-none font-semibold select-none">-</span>
@@ -186,8 +239,9 @@ export function CartReviewClient({
                     </span>
                     <button
                       type="button"
+                      disabled={isSubmitting}
                       onClick={() => updateQuantity(item.menu_item_id, 1)}
-                      className="flex items-center justify-center w-8 h-full text-white hover:bg-[#2a2a2a] active:bg-[#333333] transition-colors duration-150 focus:outline-none cursor-pointer"
+                      className="flex items-center justify-center w-8 h-full text-white hover:bg-[#2a2a2a] active:bg-[#333333] transition-colors duration-150 focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       aria-label={`Increase quantity of ${item.name}`}
                     >
                       <span className="text-lg leading-none font-semibold select-none">+</span>
@@ -210,11 +264,12 @@ export function CartReviewClient({
                   <input
                     id={`notes-${item.menu_item_id}`}
                     type="text"
+                    disabled={isSubmitting}
                     placeholder="Add customized notes (e.g. no onions, extra spicy)…"
                     value={item.notes || ''}
                     onChange={(e) => updateNotes(item.menu_item_id, e.target.value)}
                     autoComplete="off"
-                    className="w-full text-xs bg-[#0f0f0f] border border-[#222222] focus:border-[#0007cd] focus:ring-1 focus:ring-[#1a26ff] rounded-md px-3 py-2 text-white placeholder-[#666666] outline-none transition-all duration-200"
+                    className="w-full text-xs bg-[#0f0f0f] border border-[#222222] focus:border-[#0007cd] focus:ring-1 focus:ring-[#1a26ff] rounded-md px-3 py-2 text-white placeholder-[#666666] outline-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -223,8 +278,9 @@ export function CartReviewClient({
 
           <div className="flex justify-end">
             <button
-              onClick={() => router.push(`/menu/${restaurantId}/${tableId}`)}
-              className="inline-flex items-center text-xs font-semibold text-[#a8a8a8] hover:text-white transition-colors py-1 focus-visible:ring-2 focus-visible:ring-[#1a26ff] rounded-md outline-none cursor-pointer"
+              onClick={() => !isSubmitting && router.push(`/menu/${restaurantId}/${tableId}`)}
+              disabled={isSubmitting}
+              className="inline-flex items-center text-xs font-semibold text-[#a8a8a8] hover:text-white transition-colors py-1 focus-visible:ring-2 focus-visible:ring-[#1a26ff] rounded-md outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -248,14 +304,18 @@ export function CartReviewClient({
                 <button
                   key={mode.id}
                   type="button"
-                  onClick={() => setPaymentMode(mode.id)}
+                  disabled={isSubmitting}
+                  onClick={() => !isSubmitting && setPaymentMode(mode.id)}
                   onKeyDown={(e) => {
+                    if (isSubmitting) return
                     if (e.key === ' ' || e.key === 'Enter') {
                       e.preventDefault()
                       setPaymentMode(mode.id)
                     }
                   }}
-                  className={`w-full flex items-start p-4 rounded-xl border text-left transition-all duration-200 outline-none cursor-pointer ${
+                  className={`w-full flex items-start p-4 rounded-xl border text-left transition-all duration-200 outline-none ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                  } ${
                     isSelected
                       ? 'border-[#0007cd] bg-[#0007cd]/5 ring-1 ring-[#0007cd]'
                       : 'border-[#222222] bg-[#181818] hover:border-[#333333]'
@@ -326,15 +386,25 @@ export function CartReviewClient({
 
           <button
             type="button"
-            disabled={!paymentMode}
+            disabled={!paymentMode || isSubmitting}
             onClick={handlePlaceOrder}
             className={`inline-flex items-center justify-center h-12 px-6 text-sm font-semibold text-white rounded-md transition-all duration-200 shadow-lg outline-none select-none ${
-              paymentMode
+              paymentMode && !isSubmitting
                 ? 'bg-[#0007cd] hover:bg-[#0005a3] active:bg-[#0005a3] shadow-[#0007cd]/30 focus-visible:ring-2 focus-visible:ring-[#1a26ff] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818] cursor-pointer'
                 : 'bg-[#222222] text-[#666666] border border-[#333333] shadow-none cursor-not-allowed'
             }`}
           >
-            Place Order
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Placing Order...
+              </>
+            ) : (
+              'Place Order'
+            )}
           </button>
         </div>
       </footer>
