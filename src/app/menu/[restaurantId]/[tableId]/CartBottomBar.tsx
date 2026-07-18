@@ -1,10 +1,13 @@
 'use client'
 
 import React from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 
 export function CartBottomBar() {
   const { totalItems, totalPrice } = useCart()
+  const params = useParams()
+  const router = useRouter()
 
   if (totalItems === 0) return null
 
@@ -17,7 +20,11 @@ export function CartBottomBar() {
   }
 
   const handleViewCart = () => {
-    console.log('View Cart clicked', { totalItems, totalPrice })
+    const restaurantId = params.restaurantId
+    const tableId = params.tableId
+    if (restaurantId && tableId) {
+      router.push(`/menu/${restaurantId}/${tableId}/cart`)
+    }
   }
 
   return (

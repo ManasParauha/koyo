@@ -10,6 +10,8 @@ export interface CartItem {
   notes?: string
 }
 
+export type PaymentMode = 'online_now' | 'online_at_end' | 'cash_at_counter' | null
+
 interface CartContextType {
   cart: CartItem[]
   addToCart: (item: Omit<CartItem, 'quantity' | 'notes'>) => void
@@ -19,12 +21,15 @@ interface CartContextType {
   clearCart: () => void
   totalItems: number
   totalPrice: number
+  paymentMode: PaymentMode
+  setPaymentMode: (mode: PaymentMode) => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([])
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>(null)
 
   const addToCart = (item: Omit<CartItem, 'quantity' | 'notes'>) => {
     setCart((prev) => {
@@ -70,6 +75,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setCart([])
+    setPaymentMode(null)
   }
 
   const totalItems = useMemo(() => {
@@ -91,6 +97,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         totalItems,
         totalPrice,
+        paymentMode,
+        setPaymentMode,
       }}
     >
       {children}

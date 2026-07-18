@@ -1,11 +1,14 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { useCart } from '@/context/CartContext'
 
 export function HeaderCartBadge() {
   const { totalItems } = useCart()
   const [bounce, setBounce] = useState(false)
+  const params = useParams()
+  const router = useRouter()
 
   useEffect(() => {
     if (totalItems > 0) {
@@ -14,6 +17,14 @@ export function HeaderCartBadge() {
       return () => clearTimeout(timer)
     }
   }, [totalItems])
+
+  const handleViewCart = () => {
+    const restaurantId = params.restaurantId
+    const tableId = params.tableId
+    if (restaurantId && tableId) {
+      router.push(`/menu/${restaurantId}/${tableId}/cart`)
+    }
+  }
 
   if (totalItems === 0) {
     return (
@@ -25,6 +36,7 @@ export function HeaderCartBadge() {
 
   return (
     <div
+      onClick={handleViewCart}
       className={`flex items-center space-x-1.5 bg-[#0007cd] text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg shadow-[#0007cd]/20 transition-all duration-300 cursor-pointer ${
         bounce ? 'scale-110' : 'scale-100'
       }`}
