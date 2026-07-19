@@ -15,16 +15,30 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
 
   const supabase = await createClient()
 
-  // Fetch the order from the database along with restaurant details
+  // Fetch the order from the database along with restaurant, table, and item details
   const { data: order, error } = await supabase
     .from('orders')
     .select(`
+      id,
       receipt_number,
       total_amount,
       payment_mode,
       payment_status,
+      status,
+      table_id,
+      tables (
+        table_number
+      ),
       restaurants (
         name
+      ),
+      order_items (
+        id,
+        quantity,
+        price_at_order,
+        menu_items (
+          name
+        )
       )
     `)
     .eq('id', orderId)
@@ -70,6 +84,9 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
         initialTotalAmount={parseFloat(order.total_amount.toString())}
         initialPaymentMode={order.payment_mode as any}
         initialPaymentStatus={order.payment_status as any}
+        initialStatus={order.status as any}
+        initialTableNumber={(order.tables as any)?.table_number || '?'}
+        initialOrderItems={(order.order_items || []) as any}
       />
     </main>
   )

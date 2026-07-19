@@ -46,6 +46,7 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
   const [now, setNow] = useState<Date>(new Date())
   const [updateError, setUpdateError] = useState<{ orderId: string; message: string } | null>(null)
   const [isConnected, setIsConnected] = useState<boolean>(true)
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
   // 1. Live ticker for calculating elapsed time (every 30 seconds)
   useEffect(() => {
@@ -184,6 +185,34 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
     }
   }
 
+  // Handle manual payment status updates for Cash At Counter orders
+  const handleMarkPaidCash = async (orderId: string) => {
+    const supabase = createClient()
+
+    // Optimistic local state update to keep UI instant
+    const originalOrders = [...orders]
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, payment_status: 'paid' as const } : o))
+    )
+
+    const { error } = await supabase
+      .from('orders')
+      .update({ payment_status: 'paid' })
+      .eq('id', orderId)
+
+    if (error) {
+      console.error('Failed to update payment status in Supabase:', error)
+      // Rollback optimistic update
+      setOrders(originalOrders)
+      setUpdateError({
+        orderId,
+        message: `Failed to mark order as paid: ${error.message}`,
+      })
+    } else {
+      setUpdateError(null)
+    }
+  }
+
   // Helper: Get order duration in minutes
   const getMinutesElapsed = (createdAtStr: string) => {
     const createdAt = new Date(createdAtStr)
@@ -268,9 +297,20 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
             Kitchen Dashboard
           </span>
           <span className="text-[#333333]">|</span>
-          <span className="text-[#a8a8a8] text-sm">
+          <span className="text-[#a8a8a8] text-sm hidden sm:inline">
             {restaurantName}
           </span>
+        </div>
+
+        {/* Search input by receipt number */}
+        <div className="flex-1 max-w-[200px] sm:max-w-xs mx-4">
+          <input
+            type="text"
+            placeholder="Search receipt #..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-10 px-4 text-xs sm:text-sm bg-[#181818] text-white border border-[#222222] rounded-md focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all font-mono placeholder:text-[#666666]"
+          />
         </div>
 
         {/* Realtime Status Indicators */}
@@ -320,8 +360,27 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {orders.map((order) => {
-              const waitMinutes = getMinutesElapsed(order.created_at)
+            {(() => {
+              const filtered = orders.filter((order) => {
+                if (!searchQuery) return true
+                return order.receipt_number?.toLowerCase().includes(searchQuery.toLowerCase())
+              })
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+                    <h3 className="text-lg font-semibold text-white tracking-tight mb-1">
+                      No matching orders
+                    </h3>
+                    <p className="text-sm text-[#888888] leading-relaxed">
+                      We couldn't find any active orders matching "{searchQuery}".
+                    </p>
+                  </div>
+                )
+              }
+
+              return filtered.map((order) => {
+                const waitMinutes = getMinutesElapsed(order.created_at)
               const urgency = getUrgencyConfig(waitMinutes)
 
               return (
@@ -451,6 +510,17 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
                       </button>
                     )}
 
+                    {order.payment_mode === 'cash_at_counter' && order.payment_status === 'pending_cash' && (
+                      <button
+                        type="button"
+                        onClick={() => handleMarkPaidCash(order.id)}
+                        className="w-full py-2 px-3 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors duration-150 flex items-center justify-center space-x-1 cursor-pointer"
+                      >
+                        <span>Mark as Paid (Cash)</span>
+                        <span>💵</span>
+                      </button>
+                    )}
+
                     {/* Secondary Status Stepper Options (Allowing custom state jumps or cancels) */}
                     <div className="flex items-center justify-between gap-1 mt-1 border-t border-[#2a2a2a] pt-2">
                       {order.status !== 'received' && (
@@ -480,7 +550,8 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
                   </div>
                 </div>
               )
-            })}
+            })
+            })()}
           </div>
         )}
       </main>
