@@ -127,7 +127,13 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
               setOrders((prev) =>
                 prev.map((o) =>
                   o.id === updated.id
-                    ? { ...o, status: updated.status, updated_at: updated.updated_at }
+                    ? {
+                        ...o,
+                        status: updated.status,
+                        payment_status: updated.payment_status,
+                        payment_mode: updated.payment_mode,
+                        updated_at: updated.updated_at
+                      }
                     : o
                 )
               )

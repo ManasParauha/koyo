@@ -1,6 +1,6 @@
 import React from 'react'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { ConfirmationClient } from './ConfirmationClient'
 
 interface PageProps {
   params: Promise<{
@@ -15,10 +15,18 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
 
   const supabase = await createClient()
 
-  // Fetch the order from the database to get the receipt number
+  // Fetch the order from the database along with restaurant details
   const { data: order, error } = await supabase
     .from('orders')
-    .select('receipt_number, total_amount')
+    .select(`
+      receipt_number,
+      total_amount,
+      payment_mode,
+      payment_status,
+      restaurants (
+        name
+      )
+    `)
     .eq('id', orderId)
     .single()
 
@@ -42,60 +50,27 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
     )
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 2,
-    }).format(price)
-  }
+  // Handle single vs array type responses from Supabase joins
+  const rawRestaurant = order.restaurants
+  const restaurantName = Array.isArray(rawRestaurant)
+    ? rawRestaurant[0]?.name
+    : (rawRestaurant as any)?.name || 'Restaurant'
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#0f0f0f] text-white font-sans relative overflow-hidden">
       {/* Blue Spotlight Glow Backdrop */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#0007cd]/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
-      <div className="max-w-md w-full bg-[#181818] border border-[#222222] p-8 rounded-xl text-center space-y-6 shadow-2xl relative z-10">
-        {/* Success Icon */}
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#33d17a]/10 text-[#33d17a] border border-[#33d17a]/20">
-          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-white">Order Placed!</h1>
-          <p className="text-[#a8a8a8] text-sm leading-relaxed">
-            Thank you for your order. We are preparing it fresh for you.
-          </p>
-        </div>
-
-        {/* Receipt and ID Info Box */}
-        <div className="bg-[#222222] border border-[#333333] rounded-lg p-5 text-left space-y-3 font-mono text-xs">
-          <div className="flex justify-between border-b border-[#333333] pb-2">
-            <span className="text-[#888888]">Receipt #</span>
-            <span className="text-white font-bold text-sm tracking-wide">{order.receipt_number}</span>
-          </div>
-          <div className="flex justify-between border-b border-[#333333] pb-2">
-            <span className="text-[#888888]">Order ID</span>
-            <span className="text-[#a8a8a8] select-all truncate max-w-[180px]">{orderId}</span>
-          </div>
-          <div className="flex justify-between pt-1">
-            <span className="text-[#888888]">Total Amount</span>
-            <span className="text-white font-bold">{formatPrice(parseFloat(order.total_amount.toString()))}</span>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="pt-2">
-          <Link
-            href={`/menu/${restaurantId}/${tableId}`}
-            className="w-full inline-flex items-center justify-center h-10 px-6 text-sm font-semibold text-white bg-[#0007cd] hover:bg-[#0005a3] active:bg-[#0005a3] rounded-md transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#1a26ff] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818] outline-none cursor-pointer"
-          >
-            Back to Menu
-          </Link>
-        </div>
-      </div>
+      <ConfirmationClient
+        orderId={orderId}
+        restaurantId={restaurantId}
+        tableId={tableId}
+        restaurantName={restaurantName}
+        receiptNumber={order.receipt_number || 'No Receipt'}
+        initialTotalAmount={parseFloat(order.total_amount.toString())}
+        initialPaymentMode={order.payment_mode as any}
+        initialPaymentStatus={order.payment_status as any}
+      />
     </main>
   )
 }
