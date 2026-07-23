@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface MenuItem {
@@ -42,11 +43,22 @@ interface KitchenFeedProps {
 }
 
 export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: KitchenFeedProps) {
+  const router = useRouter()
   const [orders, setOrders] = useState<Order[]>(initialOrders)
   const [now, setNow] = useState<Date>(new Date())
   const [updateError, setUpdateError] = useState<{ orderId: string; message: string } | null>(null)
   const [isConnected, setIsConnected] = useState<boolean>(true)
   const [searchQuery, setSearchQuery] = useState<string>('')
+
+  const handleLogout = async () => {
+    const supabase = createClient()
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Logout failed:', error.message)
+    }
+    router.push('/dashboard/login')
+    router.refresh()
+  }
 
   // 1. Live ticker for calculating elapsed time (every 30 seconds)
   useEffect(() => {
@@ -178,7 +190,7 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
       setOrders(originalOrders)
       setUpdateError({
         orderId,
-        message: `Failed to update status to "${newStatus}": ${error.message}. Please apply the RLS UPDATE policy in migrations/0002.`,
+        message: `Failed to update status to "${newStatus}": ${error.message}. Make sure your staff user is linked to this restaurant and logged in.`,
       })
     } else {
       setUpdateError(null)
@@ -329,6 +341,17 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
           <div className="text-xs bg-[#181818] border border-[#222222] px-3 py-1 rounded-md text-white">
             <span className="font-mono text-indigo-400 font-semibold">{orders.length}</span> active orders
           </div>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="text-xs bg-red-950/20 hover:bg-red-950/40 text-red-400 border border-red-900/30 px-3 py-1.5 rounded-md font-semibold transition-all flex items-center space-x-1 cursor-pointer"
+          >
+            <span>Logout</span>
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
         </div>
       </header>
 
