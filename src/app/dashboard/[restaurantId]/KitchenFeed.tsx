@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 interface MenuItem {
@@ -312,6 +313,13 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
           <span className="text-[#a8a8a8] text-sm hidden sm:inline">
             {restaurantName}
           </span>
+          <span className="text-[#333333] hidden sm:inline">|</span>
+          <Link
+            href={`/dashboard/${restaurantId}/tables`}
+            className="text-xs text-white bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] transition-colors font-medium"
+          >
+            Manage Tables
+          </Link>
         </div>
 
         {/* Search input by receipt number */}
