@@ -55,6 +55,11 @@ export function CartReviewClient({
   const handlePlaceOrder = async () => {
     if (!paymentMode || isSubmitting) return
 
+    if (typeof window !== 'undefined' && !navigator.onLine) {
+      setError("You're offline, reconnect to place your order.")
+      return
+    }
+
     setIsSubmitting(true)
     setError(null)
 

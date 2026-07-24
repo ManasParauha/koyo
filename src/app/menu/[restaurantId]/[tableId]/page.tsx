@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { MenuItemCard } from './MenuItemCard'
 import { HeaderCartBadge } from './HeaderCartBadge'
 import { CartBottomBar } from './CartBottomBar'
+import { CustomerPWAHandler } from '@/components/CustomerPWAHandler'
 
 interface PageProps {
   params: Promise<{
@@ -96,6 +97,7 @@ export default async function MenuPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-[#a8a8a8] font-sans pb-28 flex flex-col relative">
+      <CustomerPWAHandler />
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center space-x-3 max-w-[80%]">
