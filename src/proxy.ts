@@ -30,6 +30,48 @@ export default async function proxy(request: NextRequest) {
   const url = new URL(request.url)
   const path = url.pathname
 
+  // Match /admin routes
+  const isAdminRoute = path.startsWith('/admin')
+  const isAdminLoginRoute = path === '/admin/login'
+
+  if (path === '/admin') {
+    return NextResponse.redirect(new URL('/admin/restaurants', request.url))
+  }
+
+  if (isAdminLoginRoute) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: superAdmin } = await supabase
+        .from('super_admins')
+        .select('id')
+        .eq('id', user.id)
+        .single()
+
+      if (superAdmin) {
+        return NextResponse.redirect(new URL('/admin/restaurants', request.url))
+      }
+    }
+  }
+
+  if (isAdminRoute && !isAdminLoginRoute) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      const loginUrl = new URL('/admin/login', request.url)
+      return NextResponse.redirect(loginUrl)
+    }
+
+    const { data: superAdmin } = await supabase
+      .from('super_admins')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+
+    if (!superAdmin) {
+      const loginUrl = new URL('/admin/login', request.url)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
   // Match /dashboard/[restaurantId]/... but NOT /dashboard/login
   const isDashboardRoute = path.startsWith('/dashboard')
   const isLoginRoute = path === '/dashboard/login'
@@ -169,7 +211,8 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all dashboard paths (including deep nested ones)
+    // Match all dashboard and admin paths
     '/dashboard/:path*',
+    '/admin/:path*',
   ],
 }
