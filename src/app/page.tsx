@@ -436,7 +436,7 @@ export default function Home() {
               Why Restaurants Choose Koyo
             </h2>
             <p className="text-ink-muted text-[17px] sm:text-body-lg font-normal leading-subhead max-w-[640px] mx-auto text-balance">
-              We focus on dining floor efficiency and cost control, cutting out hardware leases and hefty percentage commissions.
+              We focus on dining floor efficiency and cost control, helping you avoid proprietary hardware leases and per-order fees.
             </p>
           </div>
 
@@ -454,7 +454,7 @@ export default function Home() {
               <div className="space-y-2">
                 <h3 className="text-[17px] font-semibold text-ink font-display">No Per-Order Commissions</h3>
                 <p className="text-[14px] text-ink-muted font-normal leading-relaxed">
-                  Unlike delivery applications that swallow 15&ndash;30% of order totals, Koyo operates on a flat, predictable subscription model.
+                  Koyo takes zero commission on your orders. Unlike traditional POS vendors that charge per-terminal licensing or add transaction markup fees, we never take a percentage of your restaurant&rsquo;s sales.
                 </p>
               </div>
             </div>
@@ -469,7 +469,7 @@ export default function Home() {
               <div className="space-y-2">
                 <h3 className="text-[17px] font-semibold text-ink font-display">Cheaper than Traditional POS</h3>
                 <p className="text-[14px] text-ink-muted font-normal leading-relaxed">
-                  Stop buying and repairing proprietary terminals. Guests utilize their own hardware, cutting infrastructure overhead by up to 80%.
+                  Stop buying and repairing proprietary terminals. By allowing guests to order on their own devices, you avoid costly hardware leases and high terminal maintenance expenses.
                 </p>
               </div>
             </div>
@@ -694,7 +694,6 @@ export default function Home() {
               <h4 className="text-[11px] font-semibold tracking-eyebrow text-ink-muted uppercase">Portals</h4>
               <ul className="text-[14px] font-normal text-ink-subtle space-y-2.5">
                 <li><Link href="/dashboard/login" className="hover:text-primary transition-colors duration-155">Staff Dashboard</Link></li>
-                <li><Link href="/admin" className="hover:text-primary transition-colors duration-155">Super-Admin Console</Link></li>
               </ul>
             </div>
 
