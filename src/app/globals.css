@@ -2,55 +2,95 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0066cc;
-  --color-primary-focus: #0071e3;
-  --color-primary-on-dark: #2997ff;
-  --color-ink: #1d1d1f;
-  --color-body-muted: #cccccc;
-  --color-ink-muted-80: #333333;
-  --color-ink-muted-48: #7a7a7a;
-  --color-divider-soft: #f0f0f0;
-  --color-hairline: #e0e0e0;
-  --color-canvas: #ffffff;
-  --color-canvas-parchment: #f5f5f7;
-  --color-surface-pearl: #fafafc;
-  --color-surface-tile-1: #272729;
-  --color-surface-tile-2: #2a2a2c;
-  --color-surface-tile-3: #252527;
-  --color-surface-black: #000000;
-  --color-surface-chip-translucent: rgba(210, 210, 215, 0.64);
+  --color-primary: #5e6ad2;
   --color-on-primary: #ffffff;
-  --color-on-dark: #ffffff;
+  --color-primary-hover: #828fff;
+  --color-primary-focus: #5e69d1;
+  --color-ink: #f7f8f8;
+  --color-ink-muted: #d0d6e0;
+  --color-ink-subtle: #8a8f98;
+  --color-ink-tertiary: #62666d;
+  --color-canvas: #010102;
+  --color-surface-1: #0f1011;
+  --color-surface-2: #141516;
+  --color-surface-3: #18191a;
+  --color-surface-4: #191a1b;
+  --color-hairline: #23252a;
+  --color-hairline-strong: #34343a;
+  --color-hairline-tertiary: #3e3e44;
+  --color-inverse-canvas: #ffffff;
+  --color-inverse-surface-1: #f5f6f6;
+  --color-inverse-surface-2: #f6f7f7;
+  --color-inverse-ink: #000000;
+  --color-brand-secure: #7a7fad;
+  --color-semantic-success: #27a644;
+  --color-semantic-overlay: #000000;
 
-  --font-display: "SF Pro Display", "Inter", system-ui, -apple-system, sans-serif;
-  --font-sans: "SF Pro Text", "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Linear Display", "Inter", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Linear Text", "Inter", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Linear Mono", "JetBrains Mono", ui-monospace, SF Mono, Menlo, monospace;
 
-  --tracking-tight-display: -0.28px;
-  --tracking-apple-tight: -0.374px;
-  --tracking-tagline: 0.231px;
-  --tracking-caption: -0.224px;
-
-  --radius-xs: 5px;
-  --radius-sm: 8px;
-  --radius-md: 11px;
-  --radius-lg: 18px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-xxl: 24px;
   --radius-pill: 9999px;
+  --radius-full: 9999px;
 
   --space-xxs: 4px;
   --space-xs: 8px;
   --space-sm: 12px;
-  --space-md: 17px;
+  --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
   --space-xxl: 48px;
-  --space-section: 80px;
+  --space-section: 96px;
 
-  --shadow-product: 3px 5px 30px 0 rgba(0, 0, 0, 0.22);
+  --tracking-display-xl: -0.0375em;
+  --tracking-display-lg: -0.0321em;
+  --tracking-display-md: -0.025em;
+  --tracking-headline: -0.0214em;
+  --tracking-card-title: -0.0182em;
+  --tracking-subhead: -0.01em;
+  --tracking-body-lg: -0.0055em;
+  --tracking-body: -0.0031em;
+  --tracking-eyebrow: 0.0308em;
+
+  --leading-display-xl: 1.05;
+  --leading-display-lg: 1.10;
+  --leading-display-md: 1.15;
+  --leading-headline: 1.20;
+  --leading-card-title: 1.25;
+  --leading-subhead: 1.40;
+  --leading-body-lg: 1.50;
+  --leading-body: 1.50;
+  --leading-body-sm: 1.50;
+  --leading-caption: 1.40;
+  --leading-button: 1.20;
+  --leading-eyebrow: 1.30;
+
+  --font-size-display-xl: 5rem; /* 80px */
+  --font-size-display-lg: 3.5rem; /* 56px */
+  --font-size-display-md: 2.5rem; /* 40px */
+  --font-size-headline: 1.75rem; /* 28px */
+  --font-size-card-title: 1.375rem; /* 22px */
+  --font-size-subhead: 1.25rem; /* 20px */
+  --font-size-body-lg: 1.125rem; /* 18px */
+  --font-size-body: 1rem; /* 16px */
+  --font-size-body-sm: 0.875rem; /* 14px */
+  --font-size-caption: 0.75rem; /* 12px */
+  --font-size-button: 0.875rem; /* 14px */
+  --font-size-eyebrow: 0.8125rem; /* 13px */
+  --font-size-mono: 0.8125rem; /* 13px */
+
+  --shadow-product: 0px 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #1d1d1f;
+  --background: #010102;
+  --foreground: #f7f8f8;
 }
 
 body {
