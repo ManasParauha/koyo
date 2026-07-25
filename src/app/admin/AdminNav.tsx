@@ -14,6 +14,10 @@ export default function AdminNav({ email }: AdminNavProps) {
   const router = useRouter()
   const supabase = createClient()
 
+  if (pathname === '/admin/login') {
+    return null
+  }
+
   // Hide nav items if not logged in (e.g. on login page)
   const isLoggedIn = !!email
 
@@ -24,14 +28,11 @@ export default function AdminNav({ email }: AdminNavProps) {
   }
 
   return (
-    <header className="w-full h-16 bg-[#0f0f0f] border-b border-[#222222] flex items-center justify-between px-6 z-50">
+    <header className="w-full h-16 bg-canvas border-b border-hairline flex items-center justify-between px-6 z-50">
       <div className="flex items-center space-x-8">
-        <Link href="/admin/restaurants" className="flex items-center space-x-2.5">
-          <span className="w-6 h-6 bg-[#0007cd] rounded flex items-center justify-center font-bold text-xs text-white">
-            K
-          </span>
-          <span className="font-semibold text-sm tracking-tight text-white">
-            Koyo Platform <span className="text-[#a8a8a8] font-normal text-xs ml-1">Admin</span>
+        <Link href="/admin/restaurants" className="flex items-center">
+          <span className="font-semibold text-sm tracking-tight text-ink font-display">
+            Koyo Platform <span className="text-ink-subtle font-normal text-xs ml-1">Admin</span>
           </span>
         </Link>
 
@@ -58,7 +59,7 @@ export default function AdminNav({ email }: AdminNavProps) {
           </span>
           <button
             onClick={handleLogout}
-            className="h-8 bg-[#222222] hover:bg-[#2a2a2a] text-white border border-[#333333] px-3.5 rounded-md text-xs font-semibold tracking-wide transition-colors cursor-pointer"
+            className="h-8 bg-surface-2 hover:bg-surface-3 text-ink border border-hairline px-3.5 rounded-md text-xs font-semibold tracking-wide transition-colors cursor-pointer"
           >
             Logout
           </button>

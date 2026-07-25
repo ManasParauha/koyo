@@ -111,11 +111,7 @@ export default function Home() {
       {/* 1. Global Navigation Bar */}
       <header className="sticky top-0 z-50 w-full h-14 bg-canvas/80 backdrop-blur-md border-b border-hairline select-none">
         <div className="max-w-[980px] mx-auto h-full px-6 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2 text-ink hover:text-primary transition-colors duration-150 group" aria-label="Koyo Home">
-            <svg className="w-4 h-4 text-primary group-hover:text-primary-hover transition-colors duration-150" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2.5" fill="none" />
-              <path d="M9 7v10M15 7l-4.5 5 4.5 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <Link href="/" className="flex items-center text-ink hover:text-primary transition-colors duration-150 group" aria-label="Koyo Home">
             <span className="font-semibold text-ink tracking-display-md text-[18px] font-display">Koyo</span>
           </Link>
 
@@ -668,11 +664,7 @@ export default function Home() {
         <div className="max-w-[980px] mx-auto flex flex-col md:flex-row items-start justify-between gap-12">
           
           <div className="space-y-4 max-w-sm">
-            <Link href="/" className="flex items-center space-x-2 text-ink hover:text-primary transition-colors group" aria-label="Koyo Home">
-              <svg className="w-4 h-4 text-primary group-hover:text-primary-hover transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2.5" fill="none" />
-                <path d="M9 7v10M15 7l-4.5 5 4.5 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            <Link href="/" className="flex items-center text-ink hover:text-primary transition-colors group" aria-label="Koyo Home">
               <span className="font-semibold text-ink tracking-display-md font-display text-[18px]">Koyo</span>
             </Link>
             <p className="text-[12px] font-normal leading-relaxed text-ink-subtle">
