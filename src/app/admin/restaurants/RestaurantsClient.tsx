@@ -151,10 +151,10 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
           </span>
           <input
             type="text"
-            placeholder="Search by restaurant name or UPI..."
+            placeholder="Search by restaurant name or UPI…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md pl-10 pr-4 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all text-white placeholder:text-[#666666]"
+            className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md pl-10 pr-4 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666]"
           />
         </div>
       </div>
@@ -174,61 +174,115 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-[#222222] bg-[#1d1d1d]/30 text-[#888888] uppercase tracking-wider font-semibold text-[10px]">
-                  <th className="py-4 px-6">Name</th>
-                  <th className="py-4 px-6">UPI ID</th>
-                  <th className="py-4 px-6 text-center">Tables</th>
-                  <th className="py-4 px-6 text-center">Menu Items</th>
-                  <th className="py-4 px-6">Onboarded</th>
-                  <th className="py-4 px-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#222222] text-white">
-                {filteredRestaurants.map((r) => (
-                  <tr key={r.id} className="hover:bg-[#222222]/30 transition-colors group">
-                    <td className="py-4 px-6">
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="border-b border-[#222222] bg-[#1d1d1d]/30 text-[#888888] uppercase tracking-wider font-semibold text-[10px]">
+                    <th className="py-4 px-6">Name</th>
+                    <th className="py-4 px-6">UPI ID</th>
+                    <th className="py-4 px-6 text-center">Tables</th>
+                    <th className="py-4 px-6 text-center">Menu Items</th>
+                    <th className="py-4 px-6">Onboarded</th>
+                    <th className="py-4 px-6 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#222222] text-white">
+                  {filteredRestaurants.map((r) => (
+                    <tr key={r.id} className="hover:bg-[#222222]/30 transition-[background-color] duration-150 group">
+                      <td className="py-4 px-6">
+                        <Link
+                          href={`/admin/restaurants/${r.id}`}
+                          className="font-medium text-white hover:text-[#00d4ff] transition-[color]"
+                        >
+                          {r.name}
+                        </Link>
+                      </td>
+                      <td className="py-4 px-6 text-[#a8a8a8] font-mono">
+                        {r.upi_id || '—'}
+                      </td>
+                      <td className="py-4 px-6 text-center text-[#a8a8a8] font-medium">
+                        {getCount(r.tables)}
+                      </td>
+                      <td className="py-4 px-6 text-center text-[#a8a8a8] font-medium">
+                        {getCount(r.menu_items)}
+                      </td>
+                      <td className="py-4 px-6 text-[#a8a8a8]">
+                        {new Date(r.created_at).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <Link
+                          href={`/admin/restaurants/${r.id}`}
+                          className="inline-flex items-center space-x-1 text-xs text-[#a8a8a8] group-hover:text-white transition-[color]"
+                        >
+                          <span>Manage</span>
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                          </svg>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden divide-y divide-[#222222]">
+              {filteredRestaurants.map((r) => (
+                <div key={r.id} className="p-4 space-y-3">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="min-w-0 flex-1">
                       <Link
                         href={`/admin/restaurants/${r.id}`}
-                        className="font-medium text-white hover:text-[#00d4ff] transition-colors"
+                        className="font-semibold text-white text-sm hover:text-[#00d4ff] transition-[color]"
                       >
                         {r.name}
                       </Link>
-                    </td>
-                    <td className="py-4 px-6 text-[#a8a8a8] font-mono">
-                      {r.upi_id || '—'}
-                    </td>
-                    <td className="py-4 px-6 text-center text-[#a8a8a8] font-medium">
-                      {getCount(r.tables)}
-                    </td>
-                    <td className="py-4 px-6 text-center text-[#a8a8a8] font-medium">
-                      {getCount(r.menu_items)}
-                    </td>
-                    <td className="py-4 px-6 text-[#a8a8a8]">
+                      <p className="text-xs text-[#888888] mt-0.5 font-mono truncate max-w-[240px]">
+                        {r.upi_id || '—'}
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-[#666666] font-mono shrink-0">
                       {new Date(r.created_at).toLocaleDateString(undefined, {
-                        year: 'numeric',
                         month: 'short',
                         day: 'numeric',
+                        year: 'numeric',
                       })}
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <Link
-                        href={`/admin/restaurants/${r.id}`}
-                        className="inline-flex items-center space-x-1 text-xs text-[#a8a8a8] group-hover:text-white transition-colors"
-                      >
-                        <span>Manage</span>
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 py-2 border-t border-b border-[#222222]/50 text-center text-xs">
+                    <div>
+                      <span className="text-[#666666] block text-[10px] uppercase font-bold tracking-wider">Tables</span>
+                      <span className="text-[#a8a8a8] font-mono font-semibold">{getCount(r.tables)}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#666666] block text-[10px] uppercase font-bold tracking-wider">Menu Items</span>
+                      <span className="text-[#a8a8a8] font-mono font-semibold">{getCount(r.menu_items)}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-1">
+                    <Link
+                      href={`/admin/restaurants/${r.id}`}
+                      className="w-full text-center py-2 text-xs text-[#a8a8a8] hover:text-white bg-[#111112] border border-[#222222] rounded-md transition-[color,background-color] font-medium flex items-center justify-center space-x-1.5 focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
+                    >
+                      <span>Manage Restaurant</span>
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -237,11 +291,11 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="max-w-lg w-full bg-[#181818] border border-[#222222] rounded-xl overflow-hidden shadow-2xl relative animate-in fade-in-50 zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[#222222]">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[#222222]">
               <h2 className="text-base font-semibold text-white">Add New Restaurant</h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-[#666666] hover:text-white transition-colors cursor-pointer"
+                className="text-[#666666] hover:text-white transition-[color] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd] rounded-md"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -251,7 +305,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
 
             {/* Modal Body / Form */}
             <form onSubmit={handleSubmit}>
-              <div className="p-6 space-y-4">
+              <div className="p-4 sm:p-6 space-y-4">
                 {formError && (
                   <div className="bg-red-950/30 border border-red-900/30 text-red-400 text-xs p-3.5 rounded-lg leading-normal">
                     {formError}
@@ -268,7 +322,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                     placeholder="e.g. Bella Italia Bistro"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all text-white placeholder:text-[#666666]"
+                    className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666]"
                   />
                 </div>
 
@@ -282,7 +336,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                       placeholder="merchant@upi"
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
-                      className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all text-white placeholder:text-[#666666]"
+                      className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666]"
                     />
                   </div>
 
@@ -296,7 +350,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                       placeholder="owner@restaurant.com"
                       value={ownerEmail}
                       onChange={(e) => setOwnerEmail(e.target.value)}
-                      className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all text-white placeholder:text-[#666666]"
+                      className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666]"
                     />
                   </div>
                 </div>
@@ -306,28 +360,28 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                     Address
                   </label>
                   <textarea
-                    placeholder="123 Main Street, Suite 400..."
+                    placeholder="123 Main Street, Suite 400…"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     rows={2}
-                    className="w-full bg-[#0f0f0f] border border-[#222222] rounded-md p-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all text-white placeholder:text-[#666666] resize-none"
+                    className="w-full bg-[#0f0f0f] border border-[#222222] rounded-md p-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666] resize-none"
                   />
                 </div>
               </div>
 
               {/* Modal Footer */}
-              <div className="px-6 py-4 bg-[#1d1d1d]/30 border-t border-[#222222] flex items-center justify-end space-x-3">
+              <div className="px-4 sm:px-6 py-4 bg-[#1d1d1d]/30 border-t border-[#222222] flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end sm:space-x-3 sm:gap-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="h-10 bg-[#222222] hover:bg-[#2a2a2a] text-white border border-[#333333] px-4 rounded-md text-xs font-semibold transition-colors cursor-pointer"
+                  className="w-full sm:w-auto h-10 bg-[#222222] hover:bg-[#2a2a2a] text-white border border-[#333333] px-4 rounded-md text-xs font-semibold transition-[color,background-color] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="h-10 bg-[#0007cd] hover:bg-[#0005a3] text-white text-xs font-semibold rounded-md px-5 transition-colors cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
+                  className="w-full sm:w-auto h-10 bg-[#0007cd] hover:bg-[#0005a3] text-white text-xs font-semibold rounded-md px-5 transition-[color,background-color] cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
                 >
                   {isPending ? (
                     <>
@@ -335,7 +389,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      <span>Creating...</span>
+                      <span>Creating…</span>
                     </>
                   ) : (
                     <span>Onboard Restaurant</span>

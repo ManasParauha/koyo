@@ -74,6 +74,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
 
   // Delete Dialog States
   const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
 
   // Transitions
   const [isPendingSave, startTransitionSave] = useTransition()
@@ -285,36 +286,93 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#0007cd]/5 rounded-full blur-[100px] pointer-events-none z-0" />
 
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-6 sm:px-8 relative z-10">
-        <div className="flex items-center space-x-4">
-          <span className="font-bold text-white text-lg tracking-tight uppercase">
-            Menu Management
-          </span>
-          <span className="text-[#333333]">|</span>
-          <span className="text-[#a8a8a8] text-sm hidden sm:inline">
-            {restaurantName}
-          </span>
-          <span className="text-[#333333] hidden sm:inline">|</span>
-          <Link
-            href={`/dashboard/${restaurantId}`}
-            className="text-xs text-[#a8a8a8] bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] hover:text-white transition-all font-medium focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
-          >
-            ← Back to Orders
-          </Link>
+      <header className="sticky top-0 z-40 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] w-full relative z-10">
+        {/* Main Header Bar */}
+        <div className="h-16 flex items-center justify-between px-4 sm:px-8">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <span className="font-bold text-white text-base sm:text-lg tracking-tight uppercase whitespace-nowrap">
+              Menu Management
+            </span>
+            <span className="text-[#333333] hidden sm:inline">|</span>
+            <span className="text-[#a8a8a8] text-xs sm:text-sm hidden md:inline truncate max-w-[120px] lg:max-w-none">
+              {restaurantName}
+            </span>
+            {/* Desktop Back to Orders Link */}
+            <span className="text-[#333333] hidden md:inline">|</span>
+            <Link
+              href={`/dashboard/${restaurantId}`}
+              className="hidden md:inline-flex text-xs text-[#a8a8a8] bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] hover:text-white transition-[color,background-color] font-medium focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
+            >
+              ← Back to Orders
+            </Link>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:block">
+            <button
+              type="button"
+              onClick={handleOpenAdd}
+              className="text-xs text-white bg-[#0007cd] hover:bg-[#0005a3] px-3.5 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1.5 shadow-md focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Add Menu Item</span>
+            </button>
+          </div>
+
+          {/* Mobile Right: Hamburger Toggle Button */}
+          <div className="flex md:hidden items-center space-x-2">
+            <Link
+              href={`/dashboard/${restaurantId}`}
+              className="text-xs text-[#a8a8a8] bg-[#181818] border border-[#222222] px-2.5 py-1.5 rounded-md hover:bg-[#222222] hover:text-white transition-[color,background-color] font-medium flex items-center space-x-1 focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
+            >
+              <span>← Back</span>
+            </Link>
+            
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-[#a8a8a8] hover:text-white bg-[#181818] border border-[#222222] rounded-md transition-[color,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd] cursor-pointer"
+              aria-expanded={isMobileMenuOpen}
+              aria-label="Toggle Navigation Menu"
+            >
+              {isMobileMenuOpen ? (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
 
-        <div>
-          <button
-            type="button"
-            onClick={handleOpenAdd}
-            className="text-xs text-white bg-[#0007cd] hover:bg-[#0005a3] px-3.5 py-1.5 rounded-md font-semibold transition-all flex items-center space-x-1.5 shadow-md focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none cursor-pointer"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            <span>Add Menu Item</span>
-          </button>
-        </div>
+        {/* Mobile Dropdown Menu Container */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-[#222222] bg-[#0f0f0f]/95 backdrop-blur-md px-4 py-4 space-y-4 flex flex-col transition-all duration-300">
+            <div className="text-[10px] tracking-wider text-[#a8a8a8] font-bold border-b border-[#222222] pb-2 flex justify-between items-center">
+              <span>RESTAURANT</span>
+              <span className="text-white font-semibold">{restaurantName}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                handleOpenAdd()
+              }}
+              className="w-full text-center py-2.5 text-xs bg-[#0007cd] hover:bg-[#0005a3] text-white rounded-md font-semibold transition-[color,background-color] flex items-center justify-center space-x-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd]"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span>Add Menu Item</span>
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Main Container */}
@@ -428,26 +486,26 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                         </div>
 
                         {/* Card Controls */}
-                        <div className="flex items-center justify-between pt-3 border-t border-[#222222]/50 mt-2">
+                        <div className="flex flex-col gap-2 pt-3 border-t border-[#222222]/50 mt-2 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
                           <div className="flex items-center space-x-3">
                             <button
                               type="button"
                               onClick={() => handleOpenEdit(item)}
-                              className="text-xs text-[#a8a8a8] hover:text-white transition-all bg-[#222222] border border-[#333333] px-2.5 py-1 rounded-md font-medium"
+                              className="text-xs text-[#a8a8a8] hover:text-white transition-[color,background-color] bg-[#222222] border border-[#333333] px-2.5 py-1 rounded-md font-medium cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
                             >
                               Edit
                             </button>
                             <button
                               type="button"
                               onClick={() => setItemToDelete(item)}
-                              className="text-xs text-red-400 hover:text-red-300 transition-all bg-red-950/10 border border-red-900/30 px-2.5 py-1 rounded-md font-medium"
+                              className="text-xs text-red-400 hover:text-red-300 transition-[color,background-color] bg-red-950/10 border border-red-900/30 px-2.5 py-1 rounded-md font-medium cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none"
                             >
                               Delete
                             </button>
                           </div>
 
                           {/* Available Toggle */}
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center justify-between sm:justify-end space-x-2 w-full sm:w-auto">
                             <span className="text-[11px] font-medium uppercase tracking-wider text-[#666666]">
                               {item.is_available ? 'Available' : 'Sold Out'}
                             </span>
@@ -458,7 +516,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                                 onChange={() => handleToggleAvailable(item.id, item.is_available)}
                                 className="sr-only peer" 
                               />
-                              <div className="w-9 h-5 bg-[#222222] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#888888] after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0007cd] peer-checked:after:bg-white peer-checked:after:border-transparent" />
+                              <div className="w-9 h-5 bg-[#222222] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#888888] after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-[transform,background-color] peer-checked:bg-[#0007cd] peer-checked:after:bg-white peer-checked:after:border-transparent peer-focus-visible:ring-2 peer-focus-visible:ring-[#0007cd] peer-focus-visible:outline-none" />
                             </label>
                           </div>
                         </div>

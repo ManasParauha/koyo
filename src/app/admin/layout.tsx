@@ -22,7 +22,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-canvas text-ink-muted font-sans flex flex-col antialiased">
+    <div className="min-h-screen bg-canvas text-ink-muted font-sans flex flex-col antialiased overflow-x-hidden">
       {/* Top Navbar */}
       <AdminNav email={user?.email || null} />
 

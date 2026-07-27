@@ -99,26 +99,29 @@ export default async function PrintTablesPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white print:bg-white print:text-black font-sans flex flex-col">
       {/* Control Panel (Hidden during printing) */}
-      <header className="sticky top-0 z-40 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-6 sm:px-8 print:hidden">
-        <div className="flex items-center space-x-4">
-          <span className="font-bold text-white text-lg tracking-tight uppercase">
+      <header className="sticky top-0 z-40 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-4 sm:px-8 print:hidden">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          <span className="font-bold text-white text-sm sm:text-base md:text-lg tracking-tight uppercase whitespace-nowrap">
             Print QR Codes
           </span>
-          <span className="text-[#333333]">|</span>
-          <span className="text-[#a8a8a8] text-sm hidden sm:inline">
+          <span className="text-[#333333] hidden md:inline">|</span>
+          <span className="text-[#a8a8a8] text-xs sm:text-sm hidden md:inline truncate max-w-[120px] lg:max-w-none">
             {restaurant.name}
           </span>
-          <span className="text-[#333333] hidden sm:inline">|</span>
-          <Link
-            href={`/dashboard/${restaurantId}/tables`}
-            className="text-xs text-[#a8a8a8] bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] hover:text-white transition-all font-medium focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
-          >
-            ← Back to Tables
-          </Link>
         </div>
 
-        {/* Client component button to trigger print dialog */}
-        <PrintButton />
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <Link
+            href={`/dashboard/${restaurantId}/tables`}
+            className="text-xs text-[#a8a8a8] bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] hover:text-white transition-[color,background-color] font-medium focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
+          >
+            <span className="hidden sm:inline">← Back to Tables</span>
+            <span className="sm:hidden">← Back</span>
+          </Link>
+          <span className="text-[#333333] hidden sm:inline">|</span>
+          {/* Client component button to trigger print dialog */}
+          <PrintButton />
+        </div>
       </header>
 
       {/* Printable Sheet (Standard A4 alignment) */}

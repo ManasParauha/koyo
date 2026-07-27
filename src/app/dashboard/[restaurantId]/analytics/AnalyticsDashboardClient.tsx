@@ -239,23 +239,24 @@ export function AnalyticsDashboardClient({
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-[#a8a8a8] font-sans flex flex-col">
       {/* Top Header */}
-      <header className="sticky top-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-6 sm:px-8">
-        <div className="flex items-center space-x-4">
+      <header className="sticky top-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-4 sm:px-8">
+        <div className="flex items-center space-x-3 sm:space-x-4">
           <Link
             href={`/dashboard/${restaurantId}`}
-            className="text-xs bg-[#181818] border border-[#222222] text-[#a8a8a8] px-3 py-1.5 rounded-md hover:bg-[#222222] transition-colors font-medium flex items-center space-x-1"
+            className="text-xs bg-[#181818] border border-[#222222] text-[#a8a8a8] px-3 py-1.5 rounded-md hover:bg-[#222222] transition-[color,background-color] font-medium flex items-center space-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            <span>Back to Dashboard</span>
+            <span className="hidden sm:inline">Back to Dashboard</span>
+            <span className="sm:hidden">Dashboard</span>
           </Link>
           <span className="text-[#333333]">|</span>
-          <span className="font-bold text-white text-md tracking-tight uppercase">
+          <span className="font-bold text-white text-sm sm:text-base tracking-tight uppercase whitespace-nowrap">
             Analytics
           </span>
-          <span className="text-[#333333] hidden sm:inline">|</span>
-          <span className="text-[#a8a8a8] text-sm hidden sm:inline">
+          <span className="text-[#333333] hidden md:inline">|</span>
+          <span className="text-[#a8a8a8] text-xs sm:text-sm hidden md:inline truncate max-w-[120px] lg:max-w-none">
             {restaurantName}
           </span>
         </div>
@@ -265,9 +266,9 @@ export function AnalyticsDashboardClient({
             type="button"
             onClick={fetchAnalytics}
             disabled={loading}
-            className="text-xs bg-[#181818] hover:bg-[#222222] text-white border border-[#222222] px-3 py-1.5 rounded-md font-semibold transition-all flex items-center space-x-1 cursor-pointer disabled:opacity-50"
+            className="text-xs bg-[#181818] hover:bg-[#222222] text-white border border-[#222222] px-3 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1 cursor-pointer disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
           >
-            <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2" />
             </svg>
             <span className="hidden sm:inline">Refresh</span>
@@ -285,12 +286,12 @@ export function AnalyticsDashboardClient({
             <p className="text-xs text-[#a8a8a8]">Select analytics reporting window</p>
           </div>
           
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex bg-[#0f0f0f] border border-[#222222] p-1 rounded-lg">
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <div className="flex bg-[#0f0f0f] border border-[#222222] p-1 rounded-lg overflow-x-auto max-w-full whitespace-nowrap scrollbar-none">
               <button
                 type="button"
                 onClick={() => setRange('today')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all ${
+                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-[color,background-color] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none ${
                   range === 'today' ? 'bg-[#0007cd] text-white' : 'text-[#a8a8a8] hover:text-white'
                 }`}
               >
@@ -299,7 +300,7 @@ export function AnalyticsDashboardClient({
               <button
                 type="button"
                 onClick={() => setRange('7days')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all ${
+                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-[color,background-color] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none ${
                   range === '7days' ? 'bg-[#0007cd] text-white' : 'text-[#a8a8a8] hover:text-white'
                 }`}
               >
@@ -308,7 +309,7 @@ export function AnalyticsDashboardClient({
               <button
                 type="button"
                 onClick={() => setRange('30days')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all ${
+                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-[color,background-color] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none ${
                   range === '30days' ? 'bg-[#0007cd] text-white' : 'text-[#a8a8a8] hover:text-white'
                 }`}
               >
@@ -317,7 +318,7 @@ export function AnalyticsDashboardClient({
               <button
                 type="button"
                 onClick={() => setRange('custom')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-all ${
+                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-[color,background-color] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none ${
                   range === 'custom' ? 'bg-[#0007cd] text-white' : 'text-[#a8a8a8] hover:text-white'
                 }`}
               >
@@ -326,25 +327,29 @@ export function AnalyticsDashboardClient({
             </div>
 
             {range === 'custom' && (
-              <form onSubmit={handleApplyCustomRange} className="flex items-center gap-2">
-                <input
-                  type="date"
-                  value={customStart}
-                  onChange={(e) => setCustomStart(e.target.value)}
-                  required
-                  className="bg-[#0f0f0f] border border-[#222222] text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0007cd] transition-all font-mono"
-                />
-                <span className="text-xs text-[#a8a8a8]">to</span>
-                <input
-                  type="date"
-                  value={customEnd}
-                  onChange={(e) => setCustomEnd(e.target.value)}
-                  required
-                  className="bg-[#0f0f0f] border border-[#222222] text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0007cd] transition-all font-mono"
-                />
+              <form onSubmit={handleApplyCustomRange} className="flex flex-col sm:flex-row sm:items-center gap-2 w-full md:w-auto">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <input
+                    type="date"
+                    value={customStart}
+                    onChange={(e) => setCustomStart(e.target.value)}
+                    required
+                    aria-label="Start Date"
+                    className="w-full min-w-0 bg-[#0f0f0f] border border-[#222222] text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0007cd] focus-visible:ring-1 focus-visible:ring-[#0007cd] transition-[border-color,box-shadow] font-mono"
+                  />
+                  <span className="text-xs text-[#a8a8a8] shrink-0">to</span>
+                  <input
+                    type="date"
+                    value={customEnd}
+                    onChange={(e) => setCustomEnd(e.target.value)}
+                    required
+                    aria-label="End Date"
+                    className="w-full min-w-0 bg-[#0f0f0f] border border-[#222222] text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0007cd] focus-visible:ring-1 focus-visible:ring-[#0007cd] transition-[border-color,box-shadow] font-mono"
+                  />
+                </div>
                 <button
                   type="submit"
-                  className="text-xs bg-[#0007cd] hover:bg-[#0005a3] text-white px-3 py-1.5 rounded-lg transition-colors font-semibold"
+                  className="w-full sm:w-auto text-xs bg-[#0007cd] hover:bg-[#0005a3] text-white px-3.5 py-1.5 rounded-lg transition-[color,background-color] font-semibold text-center cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
                 >
                   Apply
                 </button>
