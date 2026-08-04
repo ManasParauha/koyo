@@ -362,8 +362,8 @@ export default function Home() {
       <section id="how-it-works" className="py-24 bg-canvas px-6 relative border-b border-hairline scroll-mt-14">
         <div className="max-w-[980px] mx-auto space-y-16">
           
-          {/* Header Left Aligned with theme styling */}
-          <div className="text-left space-y-3 max-w-[640px]">
+          {/* Header Center Aligned with theme styling */}
+          <div className="text-center space-y-3 max-w-[640px] mx-auto">
             <span className="text-[13px] font-semibold tracking-eyebrow text-primary uppercase">
               HOW IT WORKS
             </span>
