@@ -627,157 +627,193 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Demo / Contact Form Section */}
+      {/* 5. Demo / Contact Form Section - Authentic Software-Craft Intake Workspace Panel */}
       <section id="demo" className="py-24 bg-canvas px-6 relative border-b border-hairline scroll-mt-14">
         
-        <div className="max-w-xl w-full mx-auto relative z-10 space-y-10">
-          <div className="text-center space-y-3">
-            <h2 className="text-[34px] sm:text-display-lg font-semibold tracking-display-lg text-ink font-display text-balance">
+        <div className="max-w-[980px] mx-auto space-y-12 relative z-10">
+          
+          {/* Header matching Linear Display Typography Spec in DESIGN.md */}
+          <div className="text-center space-y-3 max-w-[640px] mx-auto">
+            <span className="text-[13px] font-semibold tracking-eyebrow text-primary uppercase font-mono">
+              DIRECT ONBOARDING
+            </span>
+            <h2 className="text-[34px] sm:text-display-lg font-semibold leading-display-lg tracking-display-lg text-ink font-display text-balance">
               Ready to Upgrade?
             </h2>
             <p className="text-ink-muted text-[17px] font-normal leading-subhead text-balance">
-              Fill in your details below. Our restaurant onboarding specialists will reach out within 24 hours to schedule a live demo.
+              Fill out the intake details below. Our onboarding team will digitize your menu and configure table QRs within 24 hours.
             </p>
           </div>
 
-          <div className="bg-surface-1 border border-hairline rounded-lg p-6 md:p-8 shadow-product shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+          {/* Single Unified Form Panel (DESIGN.md Surface-1 Panel) */}
+          <div className="max-w-[720px] mx-auto bg-surface-1 border border-hairline rounded-xl overflow-hidden shadow-product p-6 sm:p-10">
             {formSubmitted ? (
-              <div className="text-center py-10 space-y-5" aria-live="polite">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto text-primary" aria-hidden="true">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
+              <div className="text-center py-12 space-y-5" aria-live="polite">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto text-primary" aria-hidden="true">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <div className="space-y-2 max-w-md mx-auto">
+                    <h3 className="text-[22px] font-semibold text-ink font-display">Onboarding Ticket Created</h3>
+                    <p className="text-[14px] text-ink-muted leading-relaxed font-normal">
+                      Thanks, <span className="text-ink font-semibold">{formData.name}</span>. We&rsquo;ve sent confirmation to <span className="text-primary font-semibold">{formData.email}</span>. A specialist will call <span className="text-ink font-semibold">{formData.phone}</span> shortly.
+                    </p>
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={handleResetForm}
+                      className="bg-surface-2 border border-hairline hover:bg-surface-3 hover:border-hairline-strong text-ink text-[14px] font-medium px-5 py-2.5 rounded-md transition-colors duration-150 outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
+                    >
+                      Submit Another Request
+                    </button>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-[21px] font-semibold text-ink font-display">Demo Requested Successfully!</h3>
-                  <p className="text-[14px] text-ink-muted leading-relaxed max-w-sm mx-auto font-normal">
-                    Thanks for reaching out, <span className="text-ink font-semibold">{formData.name}</span>. We&rsquo;ve sent a confirmation to <span className="text-primary font-semibold">{formData.email}</span>. A specialist will call you at <span className="text-ink font-semibold">{formData.phone}</span> shortly.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleResetForm}
-                  className="bg-surface-2 border border-hairline hover:bg-surface-3 hover:border-hairline-strong text-ink text-[14px] font-medium px-4 py-2 rounded-md transition-[background-color,transform] active:scale-95 duration-100 ease-out focus-visible:ring-1 focus-visible:ring-primary/50 outline-none"
-                >
-                  Request another Demo
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-5" noValidate>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5 flex flex-col">
-                    <label htmlFor="name" className="text-[11px] font-semibold tracking-eyebrow text-ink-subtle uppercase">
-                      Your Name <span className="text-primary" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="e.g. Jane Doe…"
-                      autoComplete="name"
-                      className={`w-full bg-surface-2 text-ink text-[14px] border ${formErrors.name ? 'border-primary/80 focus-visible:ring-primary/45' : 'border-hairline'} focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary-focus rounded-md px-3.5 py-2.5 outline-none transition-[border-color,box-shadow] duration-150 placeholder-ink-tertiary`}
-                    />
-                    {formErrors.name && (
-                      <span className="text-[11px] text-primary block mt-1" aria-live="assertive">{formErrors.name}</span>
-                    )}
+              ) : (
+                <form onSubmit={handleFormSubmit} className="space-y-6" noValidate>
+                  
+                  {/* Grid Fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    
+                    <div className="space-y-2 flex flex-col">
+                      <label htmlFor="name" className="text-[12px] font-medium tracking-eyebrow text-ink-subtle uppercase flex items-center justify-between">
+                        <span>Your Name</span>
+                        <span className="text-primary" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        placeholder="Jane Doe"
+                        autoComplete="name"
+                        className={`w-full bg-surface-2 text-ink text-[14px] border ${formErrors.name ? 'border-primary/80' : 'border-hairline'} focus:border-primary-focus focus:ring-1 focus:ring-primary-focus/50 rounded-md px-3.5 py-2.5 outline-none transition-colors duration-150 placeholder-ink-tertiary font-sans`}
+                      />
+                      {formErrors.name && (
+                        <span className="text-[11px] text-primary block" aria-live="assertive">{formErrors.name}</span>
+                      )}
+                    </div>
+
+                    <div className="space-y-2 flex flex-col">
+                      <label htmlFor="restaurantName" className="text-[12px] font-medium tracking-eyebrow text-ink-subtle uppercase flex items-center justify-between">
+                        <span>Restaurant Name</span>
+                        <span className="text-primary" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="restaurantName"
+                        name="restaurantName"
+                        value={formData.restaurantName}
+                        onChange={handleInputChange}
+                        placeholder="The Koyo Bistro"
+                        autoComplete="off"
+                        className={`w-full bg-surface-2 text-ink text-[14px] border ${formErrors.restaurantName ? 'border-primary/80' : 'border-hairline'} focus:border-primary-focus focus:ring-1 focus:ring-primary-focus/50 rounded-md px-3.5 py-2.5 outline-none transition-colors duration-150 placeholder-ink-tertiary font-sans`}
+                      />
+                      {formErrors.restaurantName && (
+                        <span className="text-[11px] text-primary block" aria-live="assertive">{formErrors.restaurantName}</span>
+                      )}
+                    </div>
+
+                    <div className="space-y-2 flex flex-col">
+                      <label htmlFor="email" className="text-[12px] font-medium tracking-eyebrow text-ink-subtle uppercase flex items-center justify-between">
+                        <span>Email Address</span>
+                        <span className="text-primary" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="jane@restaurant.com"
+                        autoComplete="email"
+                        spellCheck={false}
+                        className={`w-full bg-surface-2 text-ink text-[14px] border ${formErrors.email ? 'border-primary/80' : 'border-hairline'} focus:border-primary-focus focus:ring-1 focus:ring-primary-focus/50 rounded-md px-3.5 py-2.5 outline-none transition-colors duration-150 placeholder-ink-tertiary font-sans`}
+                      />
+                      {formErrors.email && (
+                        <span className="text-[11px] text-primary block" aria-live="assertive">{formErrors.email}</span>
+                      )}
+                    </div>
+
+                    <div className="space-y-2 flex flex-col">
+                      <label htmlFor="phone" className="text-[12px] font-medium tracking-eyebrow text-ink-subtle uppercase flex items-center justify-between">
+                        <span>Phone Number</span>
+                        <span className="text-primary" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="+91 98765 43210"
+                        autoComplete="tel"
+                        className={`w-full bg-surface-2 text-ink text-[14px] border ${formErrors.phone ? 'border-primary/80' : 'border-hairline'} focus:border-primary-focus focus:ring-1 focus:ring-primary-focus/50 rounded-md px-3.5 py-2.5 outline-none transition-colors duration-150 placeholder-ink-tertiary font-sans`}
+                      />
+                      {formErrors.phone && (
+                        <span className="text-[11px] text-primary block" aria-live="assertive">{formErrors.phone}</span>
+                      )}
+                    </div>
+
                   </div>
 
-                  <div className="space-y-1.5 flex flex-col">
-                    <label htmlFor="restaurantName" className="text-[11px] font-semibold tracking-eyebrow text-ink-subtle uppercase">
-                      Restaurant Name <span className="text-primary" aria-hidden="true">*</span>
+                  {/* Textarea Row */}
+                  <div className="space-y-2 flex flex-col">
+                    <label htmlFor="message" className="text-[12px] font-medium tracking-eyebrow text-ink-subtle uppercase">
+                      Additional Details <span className="text-ink-tertiary font-normal text-[11px] font-sans lowercase">(optional)</span>
                     </label>
-                    <input
-                      type="text"
-                      id="restaurantName"
-                      name="restaurantName"
-                      value={formData.restaurantName}
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={3}
+                      value={formData.message}
                       onChange={handleInputChange}
-                      placeholder="e.g. The Koyo Bistro…"
+                      placeholder="Tell us about your table count, daily footfall, or POS integration requirements…"
                       autoComplete="off"
-                      className={`w-full bg-surface-2 text-ink text-[14px] border ${formErrors.restaurantName ? 'border-primary/80 focus-visible:ring-primary/45' : 'border-hairline'} focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary-focus rounded-md px-3.5 py-2.5 outline-none transition-[border-color,box-shadow] duration-150 placeholder-ink-tertiary`}
+                      className="w-full bg-surface-2 text-ink text-[14px] border border-hairline focus:border-primary-focus focus:ring-1 focus:ring-primary-focus/50 rounded-md px-3.5 py-2.5 outline-none transition-colors duration-150 placeholder-ink-tertiary resize-none font-sans"
                     />
-                    {formErrors.restaurantName && (
-                      <span className="text-[11px] text-primary block mt-1" aria-live="assertive">{formErrors.restaurantName}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5 flex flex-col">
-                    <label htmlFor="email" className="text-[11px] font-semibold tracking-eyebrow text-ink-subtle uppercase">
-                      Email Address <span className="text-primary" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="e.g. jane@restaurant.com…"
-                      autoComplete="email"
-                      spellCheck={false}
-                      className={`w-full bg-surface-2 text-ink text-[14px] border ${formErrors.email ? 'border-primary/80 focus-visible:ring-primary/45' : 'border-hairline'} focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary-focus rounded-md px-3.5 py-2.5 outline-none transition-[border-color,box-shadow] duration-150 placeholder-ink-tertiary`}
-                    />
-                    {formErrors.email && (
-                      <span className="text-[11px] text-primary block mt-1" aria-live="assertive">{formErrors.email}</span>
-                    )}
                   </div>
 
-                  <div className="space-y-1.5 flex flex-col">
-                    <label htmlFor="phone" className="text-[11px] font-semibold tracking-eyebrow text-ink-subtle uppercase">
-                      Phone Number <span className="text-primary" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="e.g. +91 98765 43210…"
-                      autoComplete="tel"
-                      className={`w-full bg-surface-2 text-ink text-[14px] border ${formErrors.phone ? 'border-primary/80 focus-visible:ring-primary/45' : 'border-hairline'} focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary-focus rounded-md px-3.5 py-2.5 outline-none transition-[border-color,box-shadow] duration-150 placeholder-ink-tertiary`}
-                    />
-                    {formErrors.phone && (
-                      <span className="text-[11px] text-primary block mt-1" aria-live="assertive">{formErrors.phone}</span>
-                    )}
+                  {/* Submit CTA */}
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-primary hover:bg-primary-hover active:bg-primary-focus text-white font-medium rounded-md py-3 text-[14px] transition-all duration-150 ease-out flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-primary-focus"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
+                          <span>Submitting Request…</span>
+                        </>
+                      ) : (
+                        <span>Submit Demo Request</span>
+                      )}
+                    </button>
                   </div>
-                </div>
 
-                <div className="space-y-1.5 flex flex-col">
-                  <label htmlFor="message" className="text-[11px] font-semibold tracking-eyebrow text-ink-subtle uppercase">
-                    Additional Details
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={3}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Tell us about your tables, average traffic, or integrations…"
-                    autoComplete="off"
-                    className="w-full bg-surface-2 text-ink text-[14px] border border-hairline focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary-focus rounded-md px-3.5 py-2.5 outline-none transition-[border-color,box-shadow] duration-150 placeholder-ink-tertiary resize-none"
-                  />
-                </div>
+                  {/* Bottom Hairline Trust Strip */}
+                  <div className="pt-4 border-t border-hairline flex flex-wrap items-center justify-between gap-3 text-[12px] text-ink-subtle font-mono">
+                    <div className="flex items-center space-x-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-semantic-success" />
+                      <span>Zero Commission</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      <span>Razorpay Merchant Verified</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-ink-subtle" />
+                      <span>No POS Hardware Required</span>
+                    </div>
+                  </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-primary hover:bg-primary-hover active:bg-primary-focus text-white font-semibold rounded-md py-3 text-[15px] transition-[background-color,transform] active:scale-95 duration-100 ease-out flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-1 focus-visible:ring-primary/50 outline-none"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
-                      <span>Submitting…</span>
-                    </>
-                  ) : (
-                    <span>Submit Demo Request</span>
-                  )}
-                </button>
-              </form>
-            )}
-          </div>
+                </form>
+              )}
+            </div>
+
         </div>
       </section>
 
