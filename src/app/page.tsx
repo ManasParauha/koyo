@@ -142,10 +142,25 @@ export default function Home() {
       <section id="hero-section" className="relative bg-canvas pt-16 pb-24 md:pt-24 md:pb-32 px-6 overflow-hidden border-b border-hairline">
         <div className="max-w-[980px] w-full mx-auto text-center space-y-12 relative z-10">
           <div className="max-w-[760px] w-full mx-auto space-y-6">
-            <div className="inline-flex items-center space-x-2 bg-surface-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] border border-hairline px-3.5 py-1.5 rounded-pill text-[12px] font-medium text-ink-muted">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block animate-pulse" aria-hidden="true" />
-              <span className="tracking-eyebrow uppercase text-[10px] font-semibold text-ink-subtle">Ditch Overpriced POS Hardware</span>
-            </div>
+            <a 
+              href="#how-it-works"
+              className="inline-flex items-center gap-1.5 sm:gap-2.5 p-1 pr-2.5 sm:pr-3.5 max-w-full bg-surface-1/90 hover:bg-surface-2 border border-hairline hover:border-primary/40 rounded-pill transition-all duration-200 group shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] hover:shadow-[0_4px_20px_rgba(94,106,210,0.18)] outline-none focus-visible:ring-1 focus-visible:ring-primary/50 text-left"
+            >
+              <span className="shrink-0 whitespace-nowrap flex items-center gap-1 sm:gap-1.5 bg-primary/10 text-primary border border-primary/20 px-1.5 sm:px-2.5 py-0.5 rounded-pill text-[9px] sm:text-[11px] font-semibold tracking-wide uppercase">
+                <span className="relative flex h-1.5 w-1.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
+                </span>
+                Hardware-Free
+              </span>
+              <span className="text-[10px] sm:text-[13px] font-medium text-ink-muted group-hover:text-ink transition-colors duration-150 whitespace-nowrap">
+                <span className="hidden sm:inline">Ditch overpriced POS terminals &amp; hardware</span>
+                <span className="sm:hidden">Ditch overpriced POS hardware</span>
+              </span>
+              <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 text-ink-subtle group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-150" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
             <h1 className="text-[36px] sm:text-[48px] md:text-display-xl font-semibold leading-display-xl tracking-display-xl text-ink font-display text-balance">
               Run Your Dining Floor <br />
               <span className="text-primary">on Frictionless QR.</span>
@@ -186,33 +201,33 @@ export default function Home() {
                     <span className="text-[11px] font-semibold text-ink-subtle tracking-eyebrow uppercase font-mono">Table 4 Menu</span>
                   </div>
                   <div className="space-y-3 font-sans">
-                    <div className="bg-surface-3 border border-hairline p-3.5 rounded-md flex items-center justify-between hover:border-hairline-strong transition-colors duration-150">
-                      <div className="space-y-1">
-                        <h4 className="text-[14px] font-semibold text-ink leading-tight">Classic Smash Burger</h4>
-                        <p className="text-[12px] text-ink-subtle leading-tight">$12.50 &bull; Double beef, cheddar, house sauce</p>
+                    <div className="bg-surface-3 border border-hairline p-3.5 rounded-md flex items-center justify-between gap-3 hover:border-hairline-strong transition-colors duration-150">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <h4 className="text-[14px] font-semibold text-ink leading-tight">Paneer Butter Masala</h4>
+                        <p className="text-[12px] text-ink-subtle leading-tight">₹250 &bull; Fresh cottage cheese, rich tomato cashew gravy</p>
                       </div>
                       <button 
                         type="button"
-                        className="bg-primary hover:bg-primary-hover active:bg-primary-focus text-[12px] text-white font-medium px-3 py-1 rounded-md transition-[background-color,transform] active:scale-95 duration-100 ease-out focus-visible:ring-1 focus-visible:ring-primary/50 outline-none"
+                        className="shrink-0 whitespace-nowrap bg-primary hover:bg-primary-hover active:bg-primary-focus text-[12px] text-white font-medium px-3 py-1.5 rounded-md transition-[background-color,transform] active:scale-95 duration-100 ease-out focus-visible:ring-1 focus-visible:ring-primary/50 outline-none"
                       >
                         + Add
                       </button>
                     </div>
-                    <div className="bg-surface-3 border border-hairline p-3.5 rounded-md flex items-center justify-between hover:border-hairline-strong transition-colors duration-150">
-                      <div className="space-y-1">
-                        <h4 className="text-[14px] font-semibold text-ink leading-tight">Truffle Parmesan Fries</h4>
-                        <p className="text-[12px] text-ink-subtle leading-tight">$6.00 &bull; Grated parm, truffle oil, parsley</p>
+                    <div className="bg-surface-3 border border-hairline p-3.5 rounded-md flex items-center justify-between gap-3 hover:border-hairline-strong transition-colors duration-150">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <h4 className="text-[14px] font-semibold text-ink leading-tight">Butter Garlic Naan</h4>
+                        <p className="text-[12px] text-ink-subtle leading-tight">₹120 &bull; Tandoor baked bread, garlic butter</p>
                       </div>
                       <button 
                         type="button"
-                        className="bg-primary hover:bg-primary-hover active:bg-primary-focus text-[12px] text-white font-medium px-3 py-1 rounded-md transition-[background-color,transform] active:scale-95 duration-100 ease-out focus-visible:ring-1 focus-visible:ring-primary/50 outline-none"
+                        className="shrink-0 whitespace-nowrap bg-primary hover:bg-primary-hover active:bg-primary-focus text-[12px] text-white font-medium px-3 py-1.5 rounded-md transition-[background-color,transform] active:scale-95 duration-100 ease-out focus-visible:ring-1 focus-visible:ring-primary/50 outline-none"
                       >
                         + Add
                       </button>
                     </div>
                     <div className="pt-2 flex items-center justify-between text-[14px] border-t border-hairline">
                       <span className="text-ink-subtle font-normal">Cart Subtotal (2 items)</span>
-                      <span className="font-semibold text-ink">$18.50</span>
+                      <span className="font-semibold text-ink">₹370</span>
                     </div>
                   </div>
                 </div>
@@ -222,32 +237,47 @@ export default function Home() {
                   <div className="flex items-center justify-between pb-2 border-b border-hairline">
                     <div className="flex items-center space-x-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" aria-hidden="true" />
-                      <span className="text-[11px] text-ink-subtle font-mono tracking-eyebrow uppercase">LIVE KITCHEN FEED</span>
+                      <span className="text-[11px] text-ink-subtle font-mono tracking-eyebrow uppercase font-semibold">LIVE KITCHEN FEED</span>
                     </div>
-                    <span className="text-[11px] font-semibold text-primary uppercase font-mono">3 Active Tickets</span>
+                    <span className="text-[11px] text-ink-subtle font-mono font-medium">3 Active</span>
                   </div>
-                  <div className="space-y-2.5 font-mono text-[12px] text-ink-muted">
-                    <div className="bg-surface-3 border border-hairline border-l-2 border-l-primary p-3 rounded-md space-y-1.5">
-                      <div className="flex justify-between text-ink font-semibold">
-                        <span>TICKET #042 (Table 4)</span>
-                        <span className="text-primary text-[11px]">2m ago</span>
+
+                  <div className="space-y-2.5">
+                    {/* Ticket #042 */}
+                    <div className="bg-surface-3 border border-hairline p-3 rounded-md space-y-2 hover:border-hairline-strong transition-colors duration-150">
+                      <div className="flex items-center justify-between font-mono text-[12px]">
+                        <span className="font-semibold text-ink">#042 &bull; Table 4</span>
+                        <span className="text-[11px] text-primary font-medium">2m ago</span>
                       </div>
-                      <div className="text-ink text-[11px] font-sans">
-                        1x Classic Smash Burger <span className="text-ink-subtle text-[11px] font-sans">[Medium Rare]</span>
-                        <br />
-                        1x Truffle Parmesan Fries
+                      <div className="text-[12px] text-ink-muted leading-tight space-y-1 font-sans">
+                        <div>1&times; Paneer Butter Masala <span className="text-ink-subtle text-[11px] font-mono ml-1 font-normal">(Medium Spicy)</span></div>
+                        <div>1&times; Butter Garlic Naan</div>
                       </div>
-                      <div className="text-[10px] text-ink-subtle">Status: Preparing</div>
+                      <div className="flex items-center justify-between pt-1 border-t border-hairline/50 text-[11px] font-mono">
+                        <span className="text-primary font-medium flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                          Preparing
+                        </span>
+                        <span className="text-ink-subtle font-sans text-[11px]">Paid &bull; ₹370</span>
+                      </div>
                     </div>
-                    <div className="bg-surface-3 border border-hairline border-l-2 border-l-hairline-strong p-3 rounded-md opacity-60">
-                      <div className="flex justify-between font-semibold">
-                        <span>TICKET #041 (Table 12)</span>
-                        <span>12m ago</span>
+
+                    {/* Ticket #041 */}
+                    <div className="bg-surface-3 border border-hairline p-3 rounded-md space-y-2 hover:border-hairline-strong transition-colors duration-150">
+                      <div className="flex items-center justify-between font-mono text-[12px]">
+                        <span className="font-semibold text-ink-muted">#041 &bull; Table 12</span>
+                        <span className="text-[11px] text-ink-subtle font-normal">12m ago</span>
                       </div>
-                      <div className="text-[11px] font-sans text-ink-subtle">
-                        2x Spicy Miso Ramen
+                      <div className="text-[12px] text-ink-subtle leading-tight font-sans">
+                        <div>2&times; Veg Dum Biryani</div>
                       </div>
-                      <div className="text-[10px] text-semantic-success font-sans font-semibold">Status: Ready to Serve</div>
+                      <div className="flex items-center justify-between pt-1 border-t border-hairline/50 text-[11px] font-mono">
+                        <span className="text-semantic-success font-medium flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-semantic-success" />
+                          Ready to Serve
+                        </span>
+                        <span className="text-ink-subtle font-sans text-[11px]">Paid &bull; ₹480</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -262,7 +292,7 @@ export default function Home() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-surface-3 border border-hairline p-3 rounded-md">
                         <div className="text-[10px] text-ink-subtle uppercase tracking-eyebrow">Gross Sales</div>
-                        <div className="text-[18px] font-semibold text-ink font-variant-numeric: tabular-nums">$4,250.00</div>
+                        <div className="text-[18px] font-semibold text-ink font-variant-numeric: tabular-nums">₹42,500.00</div>
                       </div>
                       <div className="bg-surface-3 border border-hairline p-3 rounded-md">
                         <div className="text-[10px] text-ink-subtle uppercase tracking-eyebrow">Total Orders</div>
