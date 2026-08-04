@@ -361,92 +361,114 @@ export default function Home() {
       {/* 3. How It Works Section */}
       <section id="how-it-works" className="py-24 bg-canvas px-6 relative border-b border-hairline scroll-mt-14">
         <div className="max-w-[980px] mx-auto space-y-16">
-          <div className="text-center space-y-3">
-            <span className="text-[13px] font-semibold tracking-eyebrow text-primary uppercase">Frictionless Flow</span>
+          
+          {/* Header Left Aligned with theme styling */}
+          <div className="text-left space-y-3 max-w-[640px]">
+            <span className="text-[13px] font-semibold tracking-eyebrow text-primary uppercase">
+              HOW IT WORKS
+            </span>
             <h2 className="text-[34px] sm:text-display-lg font-semibold leading-display-lg tracking-display-lg text-ink font-display text-balance">
-              Self-Serve Dining in 4 Simple Steps
+              Self-Serve Dining.<br />
+              In 4 Simple Steps.
             </h2>
-            <p className="text-ink-muted text-[17px] sm:text-body-lg font-normal leading-subhead max-w-[640px] mx-auto text-balance">
+            <p className="text-ink-muted text-[17px] sm:text-body-lg font-normal leading-subhead text-balance">
               Koyo works entirely on the mobile web. Your customers don&rsquo;t need to sign up, download any apps, or wait for service.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* 4 Step Cards Grid - Perfectly themed & constrained to max-w-[980px] */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
-            {/* Step 1 */}
-            <div className="bg-surface-1 border border-hairline rounded-lg p-6 space-y-5 flex flex-col justify-between hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
+            {/* Step 01 */}
+            <div className="bg-surface-1 border border-hairline rounded-xl p-6 flex flex-col justify-between hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
               <div className="space-y-4">
-                <div className="w-10 h-10 bg-surface-2 border border-hairline rounded-md flex items-center justify-center text-primary" aria-hidden="true">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-ink-subtle font-mono tracking-widest uppercase group-hover:text-primary transition-colors duration-150">01</span>
+                </div>
+                
+                <div className="w-10 h-10 rounded-full bg-surface-2 border border-hairline flex items-center justify-center text-primary group-hover:border-primary/40 group-hover:bg-primary/10 transition-colors duration-150" aria-hidden="true">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
                     <line x1="12" y1="18" x2="12.01" y2="18" strokeWidth="3" />
                     <path d="M9 6h6M9 10h6" />
                   </svg>
                 </div>
+
                 <div className="space-y-2">
-                  <h3 className="text-[17px] font-semibold text-ink font-display">1. Scan Table QR</h3>
+                  <h3 className="text-[17px] font-semibold text-ink font-display">Scan Table QR</h3>
                   <p className="text-[14px] text-ink-muted leading-relaxed font-normal">
                     Guest scans a unique QR code at their dining table using their smartphone camera. No app store downloads required.
                   </p>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold text-ink-tertiary uppercase font-mono tracking-widest pt-2">Step 01</span>
             </div>
 
-            {/* Step 2 */}
-            <div className="bg-surface-1 border border-hairline rounded-lg p-6 space-y-5 flex flex-col justify-between hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
+            {/* Step 02 */}
+            <div className="bg-surface-1 border border-hairline rounded-xl p-6 flex flex-col justify-between hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
               <div className="space-y-4">
-                <div className="w-10 h-10 bg-surface-2 border border-hairline rounded-md flex items-center justify-center text-primary" aria-hidden="true">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-ink-subtle font-mono tracking-widest uppercase group-hover:text-primary transition-colors duration-150">02</span>
+                </div>
+                
+                <div className="w-10 h-10 rounded-full bg-surface-2 border border-hairline flex items-center justify-center text-primary group-hover:border-primary/40 group-hover:bg-primary/10 transition-colors duration-150" aria-hidden="true">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V3.5A2.5 2.5 0 0 1 6.5 1H20v21" />
                     <path d="M9 6h6M9 10h6M9 14h6" />
                   </svg>
                 </div>
+
                 <div className="space-y-2">
-                  <h3 className="text-[17px] font-semibold text-ink font-display">2. Browse Menu</h3>
+                  <h3 className="text-[17px] font-semibold text-ink font-display">Browse Menu</h3>
                   <p className="text-[14px] text-ink-muted leading-relaxed font-normal">
                     Interactive, beautiful digital menu with food photography, categories, modifiers, and allergy labels load instantly.
                   </p>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold text-ink-tertiary uppercase font-mono tracking-widest pt-2">Step 02</span>
             </div>
 
-            {/* Step 3 */}
-            <div className="bg-surface-1 border border-hairline rounded-lg p-6 space-y-5 flex flex-col justify-between hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
+            {/* Step 03 */}
+            <div className="bg-surface-1 border border-hairline rounded-xl p-6 flex flex-col justify-between hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
               <div className="space-y-4">
-                <div className="w-10 h-10 bg-surface-2 border border-hairline rounded-md flex items-center justify-center text-primary" aria-hidden="true">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-ink-subtle font-mono tracking-widest uppercase group-hover:text-primary transition-colors duration-150">03</span>
+                </div>
+                
+                <div className="w-10 h-10 rounded-full bg-surface-2 border border-hairline flex items-center justify-center text-primary group-hover:border-primary/40 group-hover:bg-primary/10 transition-colors duration-150" aria-hidden="true">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                   </svg>
                 </div>
+
                 <div className="space-y-2">
-                  <h3 className="text-[17px] font-semibold text-ink font-display">3. Place Order</h3>
+                  <h3 className="text-[17px] font-semibold text-ink font-display">Place Order</h3>
                   <p className="text-[14px] text-ink-muted leading-relaxed font-normal">
                     Items are submitted with one tap. Orders print or display in real-time on the kitchen feed with precise table identifiers.
                   </p>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold text-ink-tertiary uppercase font-mono tracking-widest pt-2">Step 03</span>
             </div>
 
-            {/* Step 4 */}
-            <div className="bg-surface-1 border border-hairline rounded-lg p-6 space-y-5 flex flex-col justify-between hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
+            {/* Step 04 */}
+            <div className="bg-surface-1 border border-hairline rounded-xl p-6 flex flex-col justify-between hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
               <div className="space-y-4">
-                <div className="w-10 h-10 bg-surface-2 border border-hairline rounded-md flex items-center justify-center text-primary" aria-hidden="true">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-ink-subtle font-mono tracking-widest uppercase group-hover:text-primary transition-colors duration-150">04</span>
+                </div>
+                
+                <div className="w-10 h-10 rounded-full bg-surface-2 border border-hairline flex items-center justify-center text-primary group-hover:border-primary/40 group-hover:bg-primary/10 transition-colors duration-150" aria-hidden="true">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
                     <line x1="2" y1="10" x2="22" y2="10" />
                   </svg>
                 </div>
+
                 <div className="space-y-2">
-                  <h3 className="text-[17px] font-semibold text-ink font-display">4. Pay However You Like</h3>
+                  <h3 className="text-[17px] font-semibold text-ink font-display">Pay However You Like</h3>
                   <p className="text-[14px] text-ink-muted leading-relaxed font-normal">
                     Settle check with online payment gateway integration immediately, order tabs at end of dining, or pay cash at the register.
                   </p>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold text-ink-tertiary uppercase font-mono tracking-widest pt-2">Step 04</span>
             </div>
 
           </div>
