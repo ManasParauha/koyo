@@ -478,77 +478,162 @@ export default function Home() {
       {/* 4. Why Choose Us Section */}
       <section id="benefits" className="py-24 bg-canvas px-6 border-b border-hairline scroll-mt-14">
         <div className="max-w-[980px] mx-auto space-y-16">
-          <div className="text-center space-y-3">
-            <span className="text-[13px] font-semibold tracking-eyebrow text-primary uppercase">Built for Growth</span>
-            <h2 className="text-[34px] sm:text-display-lg font-semibold leading-display-lg tracking-display-lg text-ink font-display text-balance">
-              Why Restaurants Choose Koyo
+          
+          {/* Header with Pill & Dual-Tone Headline */}
+          <div className="text-center space-y-3 max-w-[680px] mx-auto">
+            <span className="text-[13px] font-semibold tracking-eyebrow text-primary uppercase">
+              BUILT FOR GROWTH
+            </span>
+            <h2 className="text-[34px] sm:text-display-lg font-semibold leading-display-lg tracking-display-lg font-display text-balance">
+              <span className="text-ink">Why Restaurants</span>{' '}
+              <span className="text-ink-muted/50">Choose Koyo</span>
             </h2>
             <p className="text-ink-muted text-[17px] sm:text-body-lg font-normal leading-subhead max-w-[640px] mx-auto text-balance">
               We focus on dining floor efficiency and cost control, helping you avoid proprietary hardware leases and per-order fees.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Stacked Vertical Rows matching Reference Image UI with Koyo Brand Aesthetics */}
+          <div className="max-w-[780px] mx-auto space-y-4">
             
             {/* Benefit 1 */}
-            <div className="bg-surface-1 border border-hairline p-6 rounded-lg flex items-start space-x-5 hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-              <div className="w-10 h-10 rounded-md bg-surface-2 border border-hairline flex items-center justify-center text-primary shrink-0" aria-hidden="true">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
+            <div className="flex flex-col md:flex-row items-center gap-5 md:gap-6 bg-surface-1 border border-hairline hover:bg-surface-2 hover:border-hairline-strong rounded-xl p-4 md:p-5 transition-all duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
+              {/* Graphic 1: Grid matching Image Item 1 */}
+              <div className="w-full md:w-[220px] shrink-0 h-[125px] bg-surface-2 border border-hairline rounded-lg p-3 flex items-center justify-center relative overflow-hidden group-hover:border-hairline-strong transition-colors duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                <div className="grid grid-cols-6 gap-1.5 w-full max-w-[170px]" aria-hidden="true">
+                  {[
+                    0, 0, 0, 0, 0, 0,
+                    0, 0, 1, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
+                    0, 1, 0, 0, 0, 0,
+                    0, 0, 0, 0, 1, 0,
+                  ].map((active, i) => (
+                    <div
+                      key={i}
+                      className={`h-3 rounded-[3px] transition-all duration-300 ${
+                        active
+                          ? 'bg-primary shadow-[0_0_10px_rgba(94,106,210,0.7)]'
+                          : 'bg-surface-3 border border-hairline/40'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-[17px] font-semibold text-ink font-display">No Per-Order Commissions</h3>
+
+              <div className="flex-1 space-y-1.5 text-left">
+                <h3 className="text-[17px] font-semibold text-ink font-display">
+                  No Per-Order Commissions
+                </h3>
                 <p className="text-[14px] text-ink-muted font-normal leading-relaxed">
-                  Koyo takes zero commission on your orders. Unlike traditional POS vendors that charge per-terminal licensing or add transaction markup fees, we never take a percentage of your restaurant&rsquo;s sales.
+                  Koyo takes zero commission on your orders. Unlike traditional POS vendors that charge per-terminal licensing or add transaction markup fees, we <span className="text-ink font-medium">never take a percentage</span> of your restaurant&rsquo;s sales.
                 </p>
               </div>
             </div>
 
             {/* Benefit 2 */}
-            <div className="bg-surface-1 border border-hairline p-6 rounded-lg flex items-start space-x-5 hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-              <div className="w-10 h-10 rounded-md bg-surface-2 border border-hairline flex items-center justify-center text-primary shrink-0" aria-hidden="true">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
+            <div className="flex flex-col md:flex-row items-center gap-5 md:gap-6 bg-surface-1 border border-hairline hover:bg-surface-2 hover:border-hairline-strong rounded-xl p-4 md:p-5 transition-all duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
+              {/* Graphic 2: Bar Chart matching Image Item 2 */}
+              <div className="w-full md:w-[220px] shrink-0 h-[125px] bg-surface-2 border border-hairline rounded-lg px-5 py-3 flex items-end justify-center relative overflow-hidden group-hover:border-hairline-strong transition-colors duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                <div className="flex items-end justify-between gap-3 w-full max-w-[160px] h-[75px]" aria-hidden="true">
+                  {[
+                    { height: '85%', active: true },
+                    { height: '40%', active: false },
+                    { height: '65%', active: true },
+                    { height: '25%', active: false },
+                    { height: '90%', active: true },
+                  ].map((bar, i) => (
+                    <div key={i} className="flex-1 h-full flex items-end justify-center">
+                      <div
+                        style={{ height: bar.height }}
+                        className={`w-full rounded-[3px] transition-all duration-300 ${
+                          bar.active
+                            ? 'bg-primary shadow-[0_0_10px_rgba(94,106,210,0.6)]'
+                            : 'bg-surface-3 border border-hairline/40'
+                        }`}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-[17px] font-semibold text-ink font-display">Cheaper than Traditional POS</h3>
+
+              <div className="flex-1 space-y-1.5 text-left">
+                <h3 className="text-[17px] font-semibold text-ink font-display">
+                  Cheaper than Traditional POS
+                </h3>
                 <p className="text-[14px] text-ink-muted font-normal leading-relaxed">
-                  Stop buying and repairing proprietary terminals. By allowing guests to order on their own devices, you avoid costly hardware leases and high terminal maintenance expenses.
+                  Stop buying and repairing proprietary terminals. By allowing guests to order on their own devices, you <span className="text-ink font-medium">avoid costly hardware leases</span> and high terminal maintenance expenses.
                 </p>
               </div>
             </div>
 
             {/* Benefit 3 */}
-            <div className="bg-surface-1 border border-hairline p-6 rounded-lg flex items-start space-x-5 hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-              <div className="w-10 h-10 rounded-md bg-surface-2 border border-hairline flex items-center justify-center text-primary shrink-0" aria-hidden="true">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
+            <div className="flex flex-col md:flex-row items-center gap-5 md:gap-6 bg-surface-1 border border-hairline hover:bg-surface-2 hover:border-hairline-strong rounded-xl p-4 md:p-5 transition-all duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
+              {/* Graphic 3: Signal Spectrum matching Image Item 3 */}
+              <div className="w-full md:w-[220px] shrink-0 h-[125px] bg-surface-2 border border-hairline rounded-lg px-4 py-3 flex items-center justify-center relative overflow-hidden group-hover:border-hairline-strong transition-colors duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                <div className="flex items-center justify-between gap-1 w-full max-w-[170px] h-[65px]" aria-hidden="true">
+                  {[
+                    0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95, 0.9, 0.85, 0.95, 1.0, 0.85, 0.7
+                  ].map((val, i) => (
+                    <div
+                      key={i}
+                      style={{ height: `${val * 100}%` }}
+                      className={`w-1 rounded-full transition-all duration-300 ${
+                        val > 0.6
+                          ? 'bg-primary shadow-[0_0_6px_rgba(94,106,210,0.7)]'
+                          : val > 0.35
+                          ? 'bg-primary/50'
+                          : 'bg-surface-3'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-[17px] font-semibold text-ink font-display">Real-Time Kitchen Sync</h3>
+
+              <div className="flex-1 space-y-1.5 text-left">
+                <h3 className="text-[17px] font-semibold text-ink font-display">
+                  Real-Time Kitchen Sync
+                </h3>
                 <p className="text-[14px] text-ink-muted font-normal leading-relaxed">
-                  Orders print automatically or populate in the live kitchen feed within milliseconds of customer checkout, eliminating wait times.
+                  Orders print automatically or populate in the live kitchen feed within milliseconds of customer checkout, <span className="text-ink font-medium">eliminating wait times</span>.
                 </p>
               </div>
             </div>
 
             {/* Benefit 4 */}
-            <div className="bg-surface-1 border border-hairline p-6 rounded-lg flex items-start space-x-5 hover:bg-surface-2 hover:border-hairline-strong transition-[background-color,border-color] duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-              <div className="w-10 h-10 rounded-md bg-surface-2 border border-hairline flex items-center justify-center text-primary shrink-0" aria-hidden="true">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <line x1="12" y1="4" x2="12" y2="20" />
-                </svg>
+            <div className="flex flex-col md:flex-row items-center gap-5 md:gap-6 bg-surface-1 border border-hairline hover:bg-surface-2 hover:border-hairline-strong rounded-xl p-4 md:p-5 transition-all duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] group">
+              {/* Graphic 4: Flexible Payments */}
+              <div className="w-full md:w-[220px] shrink-0 h-[125px] bg-surface-2 border border-hairline rounded-lg p-3 flex flex-col justify-center relative overflow-hidden group-hover:border-hairline-strong transition-colors duration-150 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                <div className="space-y-1.5 w-full max-w-[170px] mx-auto font-sans" aria-hidden="true">
+                  <div className="bg-surface-3 border border-hairline p-1.5 rounded-md flex items-center justify-between">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_5px_rgba(94,106,210,0.7)]" />
+                      <span className="text-[10px] font-medium text-ink">UPI / Card Pay</span>
+                    </div>
+                    <span className="text-[9px] text-ink-subtle font-mono">Instant</span>
+                  </div>
+                  <div className="bg-surface-3 border border-hairline p-1.5 rounded-md flex items-center justify-between">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_5px_rgba(94,106,210,0.7)]" />
+                      <span className="text-[10px] font-medium text-ink">Open Order Tab</span>
+                    </div>
+                    <span className="text-[9px] text-ink-subtle font-mono">Post-pay</span>
+                  </div>
+                  <div className="bg-surface-3 border border-hairline p-1.5 rounded-md flex items-center justify-between opacity-80">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-semantic-success" />
+                      <span className="text-[10px] font-medium text-ink-muted">Register Cash</span>
+                    </div>
+                    <span className="text-[9px] text-ink-subtle font-mono">Counter</span>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-[17px] font-semibold text-ink font-display">Flexible Payment Options</h3>
+
+              <div className="flex-1 space-y-1.5 text-left">
+                <h3 className="text-[17px] font-semibold text-ink font-display">
+                  Flexible Payment Options
+                </h3>
                 <p className="text-[14px] text-ink-muted font-normal leading-relaxed">
-                  Allow online digital payments now, tabs settled at the end of meals, or traditional cash payouts directly at your register.
+                  Allow <span className="text-ink font-medium">online digital payments now</span>, tabs settled at the end of meals, or traditional cash payouts directly at your register.
                 </p>
               </div>
             </div>
