@@ -110,18 +110,18 @@ export default function Home() {
 
       {/* 1. Global Navigation Bar */}
       <header className="sticky top-0 z-50 w-full h-14 bg-canvas/80 backdrop-blur-md border-b border-hairline select-none">
-        <div className="max-w-[980px] mx-auto h-full px-6 flex items-center justify-between">
-          <Link href="/" className="flex items-center text-ink hover:text-primary transition-colors duration-150 group" aria-label="Koyo Home">
+        <div className="max-w-[980px] mx-auto h-full px-6 flex justify-between md:grid md:grid-cols-3 items-center">
+          <Link href="/" className="flex items-center text-ink hover:text-primary transition-colors duration-150 group justify-self-start" aria-label="Koyo Home">
             <span className="font-semibold text-ink tracking-display-md text-[18px] font-display">Koyo</span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-6 text-[14px]">
+          <nav className="hidden md:flex items-center justify-center space-x-6 text-[14px]">
             <a href="#how-it-works" className="text-ink-subtle hover:text-ink transition-colors duration-150 font-medium">Platform</a>
             <a href="#benefits" className="text-ink-subtle hover:text-ink transition-colors duration-150 font-medium">Solutions</a>
             <a href="#demo" className="text-ink-subtle hover:text-ink transition-colors duration-150 font-medium">Contact</a>
           </nav>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-end space-x-3 justify-self-end">
             <Link 
               href="/dashboard/login" 
               className="text-[13px] font-medium text-ink bg-surface-1 hover:bg-surface-2 border border-hairline rounded-md px-3.5 py-1.5 transition-[background-color,transform] active:scale-95 duration-100 ease-out focus-visible:ring-1 focus-visible:ring-primary/50 outline-none"
