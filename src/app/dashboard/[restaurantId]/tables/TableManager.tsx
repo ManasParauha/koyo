@@ -4,6 +4,7 @@ import React, { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 import { addTable, deleteTable } from './actions'
 
 interface Table {
@@ -26,7 +27,6 @@ export function TableManager({ restaurantId, restaurantName, initialTables }: Ta
   const [tableNumber, setTableNumber] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
 
   // Transition state for adding tables
   const [isPendingAdd, startTransitionAdd] = useTransition()
@@ -92,125 +92,24 @@ export function TableManager({ restaurantId, restaurantName, initialTables }: Ta
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#a8a8a8] font-sans flex flex-col relative overflow-hidden">
-      {/* Blue Spotlight Glow Backdrop */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#0007cd]/5 rounded-full blur-[100px] pointer-events-none z-0" />
-
-      {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] w-full relative z-10">
-        {/* Main Header Bar */}
-        <div className="h-16 flex items-center justify-between px-4 sm:px-8">
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <span className="font-bold text-white text-base sm:text-lg tracking-tight uppercase whitespace-nowrap">
-              Kitchen Dashboard
-            </span>
-            <span className="text-[#333333] hidden sm:inline">|</span>
-            <span className="text-[#a8a8a8] text-xs sm:text-sm hidden md:inline truncate max-w-[120px] lg:max-w-none">
-              {restaurantName}
-            </span>
-            {/* Desktop Back to Orders Link */}
-            <span className="text-[#333333] hidden md:inline">|</span>
-            <Link
-              href={`/dashboard/${restaurantId}`}
-              className="hidden md:inline-flex text-xs text-[#a8a8a8] bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] hover:text-white transition-[color,background-color] font-medium focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
-            >
-              ← Back to Orders
-            </Link>
-          </div>
-
-          {/* Desktop Action Buttons */}
-          <div className="hidden md:flex items-center space-x-3 sm:space-x-4">
-            <Link
-              href={`/dashboard/${restaurantId}/tables/print`}
-              className="text-xs text-white bg-[#0007cd] hover:bg-[#0005a3] px-3.5 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1.5 shadow-md focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-              </svg>
-              <span>Print All QR Codes</span>
-            </Link>
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-xs bg-red-950/20 hover:bg-red-950/40 text-red-400 border border-red-900/30 px-3 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none"
-            >
-              <span>Logout</span>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Mobile Right: Hamburger Toggle Button */}
-          <div className="flex md:hidden items-center space-x-2">
-            <Link
-              href={`/dashboard/${restaurantId}`}
-              className="text-xs text-[#a8a8a8] bg-[#181818] border border-[#222222] px-2.5 py-1.5 rounded-md hover:bg-[#222222] hover:text-white transition-[color,background-color] font-medium flex items-center space-x-1 focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
-            >
-              <span>← Back</span>
-            </Link>
-            
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-[#a8a8a8] hover:text-white bg-[#181818] border border-[#222222] rounded-md transition-[color,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd] cursor-pointer"
-              aria-expanded={isMobileMenuOpen}
-              aria-label="Toggle Navigation Menu"
-            >
-              {isMobileMenuOpen ? (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Dropdown Menu Container */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-[#222222] bg-[#0f0f0f]/95 backdrop-blur-md px-4 py-4 space-y-4 flex flex-col transition-all duration-300">
-            <div className="text-[10px] tracking-wider text-[#a8a8a8] font-bold border-b border-[#222222] pb-2 flex justify-between items-center">
-              <span>RESTAURANT</span>
-              <span className="text-white font-semibold">{restaurantName}</span>
-            </div>
-
-            <div className="flex flex-col space-y-2 pt-1">
-              <Link
-                href={`/dashboard/${restaurantId}/tables/print`}
-                className="text-xs text-center text-white bg-[#0007cd] hover:bg-[#0005a3] py-2.5 rounded-md font-semibold transition-[color,background-color] flex items-center justify-center space-x-1.5 shadow-md focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-                <span>Print All QR Codes</span>
-              </Link>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setIsMobileMenuOpen(false)
-                handleLogout()
-              }}
-              className="w-full text-center py-2.5 text-xs bg-red-950/20 hover:bg-red-950/40 text-red-400 border border-red-900/30 rounded-md font-semibold transition-[color,background-color] flex items-center justify-center space-x-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-            >
-              <span>Logout</span>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </div>
-        )}
-      </header>
-
-      {/* Main Container */}
-      <main className="flex-1 p-6 sm:p-8 max-w-[1600px] w-full mx-auto relative z-10 flex flex-col lg:flex-row gap-8">
+    <DashboardLayout
+      restaurantId={restaurantId}
+      restaurantName={restaurantName}
+      activePage="tables"
+      headerActions={
+        <Link
+          href={`/dashboard/${restaurantId}/tables/print`}
+          className="text-xs text-white bg-[#5e6ad2] hover:bg-[#828fff] px-3.5 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1.5 shadow-md focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          <span className="hidden sm:inline">Print All QR Codes</span>
+          <span className="sm:hidden">Print QRs</span>
+        </Link>
+      }
+    >
+      <div className="p-6 sm:p-8 max-w-[1600px] w-full mx-auto relative z-10 flex flex-col lg:flex-row gap-8">
 
         {/* Left column: Add Table Form */}
         <section className="w-full lg:w-96 flex-shrink-0">
@@ -363,7 +262,7 @@ export function TableManager({ restaurantId, restaurantName, initialTables }: Ta
             </div>
           )}
         </section>
-      </main>
+      </div>
 
       {/* Confirmation Modal Overlay */}
       {tableToDelete && (
@@ -422,6 +321,6 @@ export function TableManager({ restaurantId, restaurantName, initialTables }: Ta
           </div>
         </div>
       )}
-    </div>
+    </DashboardLayout>
   )
 }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 
 interface AnalyticsDashboardClientProps {
   restaurantId: string
@@ -237,47 +238,25 @@ export function AnalyticsDashboardClient({
   const cashAtCounterPct = totalOrders > 0 ? (cashAtCounterCount / totalOrders) * 100 : 0
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#a8a8a8] font-sans flex flex-col">
-      {/* Top Header */}
-      <header className="sticky top-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] h-16 flex items-center justify-between px-4 sm:px-8">
-        <div className="flex items-center space-x-3 sm:space-x-4">
-          <Link
-            href={`/dashboard/${restaurantId}`}
-            className="text-xs bg-[#181818] border border-[#222222] text-[#a8a8a8] px-3 py-1.5 rounded-md hover:bg-[#222222] transition-[color,background-color] font-medium flex items-center space-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            <span className="hidden sm:inline">Back to Dashboard</span>
-            <span className="sm:hidden">Dashboard</span>
-          </Link>
-          <span className="text-[#333333]">|</span>
-          <span className="font-bold text-white text-sm sm:text-base tracking-tight uppercase whitespace-nowrap">
-            Analytics
-          </span>
-          <span className="text-[#333333] hidden md:inline">|</span>
-          <span className="text-[#a8a8a8] text-xs sm:text-sm hidden md:inline truncate max-w-[120px] lg:max-w-none">
-            {restaurantName}
-          </span>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <button
-            type="button"
-            onClick={fetchAnalytics}
-            disabled={loading}
-            className="text-xs bg-[#181818] hover:bg-[#222222] text-white border border-[#222222] px-3 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1 cursor-pointer disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
-          >
-            <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2" />
-            </svg>
-            <span className="hidden sm:inline">Refresh</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Main Body */}
-      <main className="flex-1 p-6 sm:p-8 max-w-[1400px] w-full mx-auto space-y-8">
+    <DashboardLayout
+      restaurantId={restaurantId}
+      restaurantName={restaurantName}
+      activePage="analytics"
+      headerActions={
+        <button
+          type="button"
+          onClick={fetchAnalytics}
+          disabled={loading}
+          className="text-xs bg-[#181818] hover:bg-[#222222] text-white border border-[#222222] px-3 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1 cursor-pointer disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e6ad2]"
+        >
+          <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2" />
+          </svg>
+          <span className="hidden sm:inline">Refresh</span>
+        </button>
+      }
+    >
+      <div className="p-6 sm:p-8 max-w-[1400px] w-full mx-auto space-y-8">
         
         {/* Date Selector Banner */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#181818] border border-[#222222] rounded-xl p-5">
@@ -601,8 +580,8 @@ export function AnalyticsDashboardClient({
           </div>
         )}
 
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }
 
@@ -729,7 +708,6 @@ function CustomRevenueChart({ data }: { data: ChartDataPoint[] }) {
           >
             <span className="font-semibold text-white mb-0.5">{data[hoveredIdx].label}</span>
             <span className="text-emerald-400 font-mono">Revenue: ₹{Number(data[hoveredIdx].revenue).toFixed(2)}</span>
-            <span className="text-indigo-400 font-mono">Orders: {data[hoveredIdx].orderCount}</span>
           </div>
         )}
       </div>

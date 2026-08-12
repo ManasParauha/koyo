@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
 
 interface MenuItem {
   name: string
@@ -50,7 +51,6 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
   const [updateError, setUpdateError] = useState<{ orderId: string; message: string } | null>(null)
   const [isConnected, setIsConnected] = useState<boolean>(true)
   const [searchQuery, setSearchQuery] = useState<string>('')
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -303,204 +303,24 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#a8a8a8] font-sans flex flex-col">
-      {/* Top Navigation / Dashboard Header */}
-      <header className="sticky top-0 z-50 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-[#222222] w-full">
-        {/* Main Header Bar */}
-        <div className="h-16 flex items-center justify-between px-4 sm:px-8">
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <span className="font-bold text-white text-base sm:text-lg tracking-tight uppercase whitespace-nowrap">
-              Kitchen Dashboard
-            </span>
-            <span className="text-[#333333] hidden sm:inline">|</span>
-            <span className="text-[#a8a8a8] text-xs sm:text-sm hidden md:inline truncate max-w-[120px] lg:max-w-none">
-              {restaurantName}
-            </span>
-            {/* Desktop Navigation Links */}
-            <span className="text-[#333333] hidden md:inline">|</span>
-            <nav className="hidden md:flex items-center space-x-3">
-              <Link
-                href={`/dashboard/${restaurantId}/tables`}
-                className="text-xs text-white bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] transition-[color,background-color] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
-              >
-                Manage Tables
-              </Link>
-              <span className="text-[#333333]">|</span>
-              <Link
-                href={`/dashboard/${restaurantId}/menu`}
-                className="text-xs text-white bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] transition-[color,background-color] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
-              >
-                Manage Menu
-              </Link>
-              <span className="text-[#333333]">|</span>
-              <Link
-                href={`/dashboard/${restaurantId}/analytics`}
-                className="text-xs text-white bg-[#181818] border border-[#222222] px-3 py-1.5 rounded-md hover:bg-[#222222] transition-[color,background-color] font-medium flex items-center space-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
-              >
-                <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
-                </svg>
-                <span>Analytics</span>
-              </Link>
-            </nav>
-          </div>
-
-          {/* Desktop Search input by receipt number */}
-          <div className="hidden md:block flex-1 max-w-[200px] lg:max-w-xs mx-4">
-            <input
-              type="text"
-              placeholder="Search receipt #…"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 px-4 text-xs lg:text-sm bg-[#181818] text-white border border-[#222222] rounded-md focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] font-mono placeholder:text-[#666666]"
-            />
-          </div>
-
-          {/* Desktop Realtime Status Indicators & Logout */}
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
-            <div className="flex items-center space-x-2 text-xs">
-              <span
-                className={`w-2.5 h-2.5 rounded-full ${
-                  isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'
-                }`}
-              />
-              <span className={isConnected ? 'text-[#a8a8a8]' : 'text-red-400'}>
-                {isConnected ? 'Syncing Live' : 'Offline'}
-              </span>
-            </div>
-
-            <div className="text-xs bg-[#181818] border border-[#222222] px-3 py-1 rounded-md text-white">
-              <span className="font-mono text-indigo-400 font-semibold">{orders.length}</span> active
-            </div>
-
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-xs bg-red-950/20 hover:bg-red-950/40 text-red-400 border border-red-900/30 px-3 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-            >
-              <span>Logout</span>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Mobile Right: Hamburger Toggle Button */}
-          <div className="flex md:hidden items-center space-x-2">
-            <div className="text-xs bg-[#181818] border border-[#222222] px-2.5 py-1 rounded-md text-white flex items-center space-x-1.5">
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'
-                }`}
-              />
-              <span className="font-mono text-indigo-400 font-bold">{orders.length}</span>
-            </div>
-            
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-[#a8a8a8] hover:text-white bg-[#181818] border border-[#222222] rounded-md transition-[color,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd] cursor-pointer"
-              aria-expanded={isMobileMenuOpen}
-              aria-label="Toggle Navigation Menu"
-            >
-              {isMobileMenuOpen ? (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
-          </div>
+    <DashboardLayout
+      restaurantId={restaurantId}
+      restaurantName={restaurantName}
+      activePage="kitchen"
+      activeOrdersCount={orders.length}
+      isConnected={isConnected}
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      headerActions={
+        <div className="flex items-center space-x-2 text-xs font-mono">
+          <span className="text-[#8a8f98] hidden sm:inline">Active Orders:</span>
+          <span className="px-2 py-0.5 rounded bg-[#18191a] border border-[#2b2d35] text-[#5e6ad2] font-semibold">
+            {orders.length}
+          </span>
         </div>
-
-        {/* Mobile Dropdown Menu Container */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-[#222222] bg-[#0f0f0f]/95 backdrop-blur-md px-4 py-4 space-y-4 flex flex-col transition-all duration-300">
-            <div className="text-[10px] tracking-wider text-[#a8a8a8] font-bold border-b border-[#222222] pb-2 flex justify-between items-center">
-              <span>RESTAURANT</span>
-              <span className="text-white font-semibold">{restaurantName}</span>
-            </div>
-
-            <div className="flex flex-col space-y-1">
-              <label htmlFor="mobile-search-receipt" className="text-[10px] uppercase font-semibold text-ink-subtle tracking-wider">
-                Search Receipt
-              </label>
-              <input
-                id="mobile-search-receipt"
-                type="text"
-                placeholder="Search receipt #…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 px-4 text-sm bg-[#181818] text-white border border-[#222222] rounded-md focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] font-mono placeholder:text-[#666666]"
-              />
-            </div>
-
-            <div className="grid grid-cols-3 gap-1.5 pt-1">
-              <Link
-                href={`/dashboard/${restaurantId}/tables`}
-                className="text-[11px] sm:text-xs text-center text-white bg-[#181818] border border-[#222222] py-2.5 rounded-md hover:bg-[#222222] transition-[color,background-color] font-medium block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Tables
-              </Link>
-              <Link
-                href={`/dashboard/${restaurantId}/menu`}
-                className="text-[11px] sm:text-xs text-center text-white bg-[#181818] border border-[#222222] py-2.5 rounded-md hover:bg-[#222222] transition-[color,background-color] font-medium block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Menu
-              </Link>
-              <Link
-                href={`/dashboard/${restaurantId}/analytics`}
-                className="text-[11px] sm:text-xs text-center text-white bg-[#181818] border border-[#222222] py-2.5 rounded-md hover:bg-[#222222] transition-[color,background-color] font-medium flex items-center justify-center space-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <svg className="w-3 h-3 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
-                </svg>
-                <span className="hidden sm:inline">Analytics</span>
-                <span className="sm:hidden">Stats</span>
-              </Link>
-            </div>
-
-            <div className="flex items-center justify-between text-xs py-1 border-t border-[#222222] border-b border-[#222222] pt-2 pb-2">
-              <div className="flex items-center space-x-2">
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'
-                  }`}
-                />
-                <span className={isConnected ? 'text-[#a8a8a8]' : 'text-red-400'}>
-                  {isConnected ? 'Syncing Live' : 'Offline'}
-                </span>
-              </div>
-              <div className="text-[#a8a8a8]">
-                <span className="font-mono text-indigo-400 font-semibold">{orders.length}</span> active orders
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setIsMobileMenuOpen(false)
-                handleLogout()
-              }}
-              className="w-full text-center py-2.5 text-xs bg-red-950/20 hover:bg-red-950/40 text-red-400 border border-red-900/30 rounded-md font-semibold transition-[color,background-color] flex items-center justify-center space-x-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-            >
-              <span>Logout</span>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </div>
-        )}
-      </header>
-
-      {/* Main Content Area */}
-      <main className="flex-1 p-6 sm:p-8 max-w-[1600px] w-full mx-auto">
+      }
+    >
+      <div className="p-6 sm:p-8 max-w-[1600px] w-full mx-auto">
         {orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#181818] border border-[#222222] text-[#888888] mb-6 shadow-md">
@@ -721,7 +541,7 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
             })()}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }
