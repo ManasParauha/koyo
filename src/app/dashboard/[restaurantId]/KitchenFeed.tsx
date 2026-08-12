@@ -44,6 +44,8 @@ interface KitchenFeedProps {
   initialOrders: Order[]
 }
 
+type FilterTab = 'all' | 'received' | 'preparing' | 'ready'
+
 export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: KitchenFeedProps) {
   const router = useRouter()
   const [orders, setOrders] = useState<Order[]>(initialOrders)
@@ -51,6 +53,7 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
   const [updateError, setUpdateError] = useState<{ orderId: string; message: string } | null>(null)
   const [isConnected, setIsConnected] = useState<boolean>(true)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('all')
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -88,7 +91,6 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
           console.log('Realtime orders payload received:', payload)
 
           if (payload.eventType === 'INSERT') {
-            // Fetch newly inserted order details with joined tables and items
             const { data, error } = await supabase
               .from('orders')
               .select(`
@@ -121,9 +123,7 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
 
             if (!error && data) {
               setOrders((prev) => {
-                // Prevent duplicate addition
                 if (prev.some((o) => o.id === data.id)) return prev
-                // Append and sort by created_at ascending (oldest first)
                 const updatedList = [...prev, data as unknown as Order]
                 return updatedList.sort(
                   (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -135,10 +135,8 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
           } else if (payload.eventType === 'UPDATE') {
             const updated = payload.new
             if (updated.status === 'served' || updated.status === 'cancelled') {
-              // Served or Cancelled orders are removed from the active kitchen dashboard
               setOrders((prev) => prev.filter((o) => o.id !== updated.id))
             } else {
-              // Update details locally
               setOrders((prev) =>
                 prev.map((o) =>
                   o.id === updated.id
@@ -172,7 +170,6 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
   const handleUpdateStatus = async (orderId: string, newStatus: Order['status']) => {
     const supabase = createClient()
 
-    // Optimistic local state update to keep UI instant
     const originalOrders = [...orders]
     setOrders((prev) => {
       if (newStatus === 'served' || newStatus === 'cancelled') {
@@ -188,11 +185,10 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
 
     if (error) {
       console.error('Failed to update order status in Supabase:', error)
-      // Rollback optimistic update
       setOrders(originalOrders)
       setUpdateError({
         orderId,
-        message: `Failed to update status to "${newStatus}": ${error.message}. Make sure your staff user is linked to this restaurant and logged in.`,
+        message: `Failed to update status to "${newStatus}": ${error.message}`,
       })
     } else {
       setUpdateError(null)
@@ -203,7 +199,6 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
   const handleMarkPaidCash = async (orderId: string) => {
     const supabase = createClient()
 
-    // Optimistic local state update to keep UI instant
     const originalOrders = [...orders]
     setOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, payment_status: 'paid' as const } : o))
@@ -216,7 +211,6 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
 
     if (error) {
       console.error('Failed to update payment status in Supabase:', error)
-      // Rollback optimistic update
       setOrders(originalOrders)
       setUpdateError({
         orderId,
@@ -243,31 +237,28 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
     return `${hrs}h ${mins}m ago`
   }
 
-  // Helper: Determine color coding based on wait time (minutes)
+  // Helper: Determine urgency styling based on wait time (minutes)
   const getUrgencyConfig = (minutes: number) => {
     if (minutes < 10) {
       return {
-        borderColor: 'border-t-emerald-500',
-        textColor: 'text-emerald-400',
-        bgColor: 'bg-emerald-500/10',
-        dotColor: 'bg-emerald-500',
-        accentShadow: '',
+        textColor: 'text-[#8a8f98]',
+        badgeBg: 'bg-[#141516]',
+        dotColor: 'bg-[#5e6ad2]',
+        isOverdue: false,
       }
     } else if (minutes <= 20) {
       return {
-        borderColor: 'border-t-amber-500',
-        textColor: 'text-amber-400',
-        bgColor: 'bg-amber-500/10',
-        dotColor: 'bg-amber-500',
-        accentShadow: '',
+        textColor: 'text-amber-400/90 font-mono',
+        badgeBg: 'bg-amber-500/10',
+        dotColor: 'bg-amber-400',
+        isOverdue: false,
       }
     } else {
       return {
-        borderColor: 'border-t-rose-500 border-x-rose-950/20 border-b-rose-950/20',
-        textColor: 'text-rose-400 font-semibold',
-        bgColor: 'bg-rose-500/15',
+        textColor: 'text-rose-400 font-mono font-medium',
+        badgeBg: 'bg-rose-500/10 border border-rose-500/20',
         dotColor: 'bg-rose-500 animate-pulse',
-        accentShadow: 'shadow-[0_0_20px_rgba(239,68,68,0.15)] ring-1 ring-rose-500/30',
+        isOverdue: true,
       }
     }
   }
@@ -302,6 +293,11 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
     }
   }
 
+  // Count active orders by status
+  const receivedCount = orders.filter((o) => o.status === 'received').length
+  const preparingCount = orders.filter((o) => o.status === 'preparing').length
+  const readyCount = orders.filter((o) => o.status === 'ready').length
+
   return (
     <DashboardLayout
       restaurantId={restaurantId}
@@ -314,53 +310,127 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
       headerActions={
         <div className="flex items-center space-x-2 text-xs font-mono">
           <span className="text-[#8a8f98] hidden sm:inline">Active Orders:</span>
-          <span className="px-2 py-0.5 rounded bg-[#18191a] border border-[#2b2d35] text-[#5e6ad2] font-semibold">
+          <span className="px-2 py-0.5 rounded-md bg-[#141516] border border-[#23252a] text-[#5e6ad2] font-medium">
             {orders.length}
           </span>
         </div>
       }
     >
-      <div className="p-6 sm:p-8 max-w-[1600px] w-full mx-auto">
+      <div className="p-6 sm:p-8 max-w-[1600px] w-full mx-auto space-y-6">
+        {/* Top Control Bar: Status Filter Tabs (DESIGN.md pricing-tab-default / selected pattern) */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#23252a] pb-4">
+          <div className="w-full sm:w-auto max-w-full overflow-x-auto scrollbar-none flex items-center gap-1 sm:gap-1.5 bg-[#0f1011] p-1 rounded-full border border-[#23252a] scroll-smooth">
+            <button
+              type="button"
+              onClick={() => setActiveFilter('all')}
+              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+                activeFilter === 'all'
+                  ? 'bg-[#141516] text-[#f7f8f8] shadow-sm border border-[#23252a]'
+                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+              }`}
+            >
+              <span>All Orders</span>
+              <span className="font-mono text-[10px] opacity-80 px-1.5 py-0.2 rounded-full bg-[#010102] border border-[#23252a]">
+                {orders.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('received')}
+              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+                activeFilter === 'received'
+                  ? 'bg-[#141516] text-[#f7f8f8] shadow-sm border border-[#23252a]'
+                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+              }`}
+            >
+              <span>Received</span>
+              {receivedCount > 0 && (
+                <span className="font-mono text-[10px] px-1.5 py-0.2 rounded-full bg-[#5e6ad2]/20 text-[#828fff] border border-[#5e6ad2]/30">
+                  {receivedCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('preparing')}
+              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+                activeFilter === 'preparing'
+                  ? 'bg-[#141516] text-[#f7f8f8] shadow-sm border border-[#23252a]'
+                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+              }`}
+            >
+              <span>Preparing</span>
+              {preparingCount > 0 && (
+                <span className="font-mono text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  {preparingCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveFilter('ready')}
+              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+                activeFilter === 'ready'
+                  ? 'bg-[#141516] text-[#f7f8f8] shadow-sm border border-[#23252a]'
+                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+              }`}
+            >
+              <span>Ready</span>
+              {readyCount > 0 && (
+                <span className="font-mono text-[10px] px-1.5 py-0.2 rounded-full bg-[#27a644]/20 text-[#27a644] border border-[#27a644]/30">
+                  {readyCount}
+                </span>
+              )}
+            </button>
+          </div>
+
+          <div className="text-xs text-[#8a8f98] font-mono flex items-center gap-2 self-end sm:self-center">
+            <span className="w-2 h-2 rounded-full bg-[#27a644] animate-pulse" />
+            <span>Live Sync Active</span>
+          </div>
+        </div>
+
+        {/* Feed Content */}
         {orders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#181818] border border-[#222222] text-[#888888] mb-6 shadow-md">
-              <svg
-                className="w-10 h-10 opacity-40"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
+          <div className="flex flex-col items-center justify-center py-32 text-center rounded-lg border border-[#23252a] bg-[#0f1011]/50">
+            <div className="w-12 h-12 rounded-lg bg-[#141516] border border-[#23252a] flex items-center justify-center text-[#8a8f98] mb-4">
+              <svg className="w-6 h-6 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-white tracking-tight mb-2">
-              All Orders Cleared!
+            <h2 className="text-base font-semibold text-[#f7f8f8] tracking-tight mb-1">
+              All Kitchen Orders Cleared
             </h2>
-            <p className="text-sm text-[#888888] max-w-md leading-relaxed">
-              No active orders in the kitchen. New customer orders will show up here instantly.
+            <p className="text-xs text-[#8a8f98] max-w-sm leading-relaxed">
+              No active pending orders. New customer dine-in orders will appear here automatically in real time.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {(() => {
               const filtered = orders.filter((order) => {
-                if (!searchQuery) return true
-                return order.receipt_number?.toLowerCase().includes(searchQuery.toLowerCase())
+                // Apply search filter
+                if (searchQuery && !order.receipt_number?.toLowerCase().includes(searchQuery.toLowerCase())) {
+                  return false
+                }
+                // Apply tab filter
+                if (activeFilter !== 'all' && order.status !== activeFilter) {
+                  return false
+                }
+                return true
               })
 
               if (filtered.length === 0) {
                 return (
-                  <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
-                    <h3 className="text-lg font-semibold text-white tracking-tight mb-1">
-                      No matching orders
+                  <div className="col-span-full flex flex-col items-center justify-center py-20 text-center rounded-lg border border-[#23252a] bg-[#0f1011]">
+                    <h3 className="text-sm font-medium text-[#f7f8f8] mb-1">
+                      No matching orders found
                     </h3>
-                    <p className="text-sm text-[#888888] leading-relaxed">
-                      We couldn't find any active orders matching "{searchQuery}".
+                    <p className="text-xs text-[#8a8f98]">
+                      Try clearing your search query or switching status tabs.
                     </p>
                   </div>
                 )
@@ -368,176 +438,184 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
 
               return filtered.map((order) => {
                 const waitMinutes = getMinutesElapsed(order.created_at)
-              const urgency = getUrgencyConfig(waitMinutes)
+                const urgency = getUrgencyConfig(waitMinutes)
 
-              return (
-                <div
-                  key={order.id}
-                  className={`flex flex-col bg-[#181818] border border-[#222222] border-t-4 ${urgency.borderColor} rounded-xl overflow-hidden transition-all duration-200 hover:border-zinc-700 ${urgency.accentShadow}`}
-                >
-                  {/* Card Header: Table Number & Urgency status */}
-                  <div className="p-4 bg-[#1e1e1e] border-b border-[#262626] flex items-center justify-between">
-                    <div>
-                      <div className="text-xs text-[#888888] uppercase tracking-wider font-mono">
-                        {order.receipt_number || 'No Receipt'}
+                return (
+                  <div
+                    key={order.id}
+                    className="group relative flex flex-col bg-[#0f1011] border border-[#23252a] hover:border-[#34343a] rounded-lg transition-all duration-150 overflow-hidden shadow-sm before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-[#34343a] before:to-transparent"
+                  >
+                    {/* Card Header: Table Number & Urgency status */}
+                    <div className="p-4 bg-[#141516]/60 border-b border-[#23252a] flex items-start justify-between">
+                      <div>
+                        <span className="font-mono text-[11px] text-[#8a8f98] tracking-wider uppercase block">
+                          {order.receipt_number || 'No Receipt'}
+                        </span>
+                        <h2 className="text-lg font-semibold text-[#f7f8f8] tracking-[-0.4px] font-display mt-0.5">
+                          Table {order.tables?.table_number || '?'}
+                        </h2>
                       </div>
-                      <div className="text-2xl font-black text-white tracking-tight flex items-center mt-1">
-                        Table {order.tables?.table_number || '?'}
+
+                      <div className="flex flex-col items-end space-y-1.5">
+                        {/* Live Ticker display */}
+                        <div
+                          className={`text-xs flex items-center space-x-1.5 px-2 py-0.5 rounded-full ${urgency.badgeBg} ${urgency.textColor}`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${urgency.dotColor}`} />
+                          <span>{formatElapsedTime(waitMinutes)}</span>
+                        </div>
+
+                        {/* Order status Badge (Linear status-badge style) */}
+                        <span
+                          className={`inline-block text-[10px] uppercase font-mono font-medium tracking-wider px-2 py-0.5 rounded-full border ${
+                            order.status === 'received'
+                              ? 'bg-[#5e6ad2]/10 text-[#828fff] border-[#5e6ad2]/30'
+                              : order.status === 'preparing'
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                              : order.status === 'ready'
+                              ? 'bg-[#27a644]/10 text-[#27a644] border-[#27a644]/20'
+                              : 'bg-[#18191a] text-[#d0d6e0] border-[#23252a]'
+                          }`}
+                        >
+                          {order.status}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      {/* Live Ticker display */}
-                      <div className={`text-xs flex items-center justify-end space-x-1.5 ${urgency.textColor}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${urgency.dotColor}`} />
-                        <span>{formatElapsedTime(waitMinutes)}</span>
+                    {/* Warning if update fails */}
+                    {updateError?.orderId === order.id && (
+                      <div className="bg-rose-500/10 border-b border-rose-500/20 text-rose-400 text-xs px-4 py-2 leading-tight font-sans">
+                        {updateError.message}
                       </div>
+                    )}
 
-                      {/* Order status Badge */}
+                    {/* Card Body: Order Items list */}
+                    <div className="flex-1 p-4 space-y-3">
+                      <ul className="space-y-2.5">
+                        {order.order_items?.map((item) => (
+                          <li key={item.id} className="text-sm">
+                            <div className="flex items-start">
+                              <span className="font-mono text-xs font-semibold text-[#828fff] bg-[#5e6ad2]/15 border border-[#5e6ad2]/25 px-1.5 py-0.5 rounded mr-2 mt-0.5 flex-shrink-0">
+                                {item.quantity}x
+                              </span>
+                              <span className="text-[#f7f8f8] font-normal leading-snug">
+                                {item.menu_items?.name || 'Unknown Item'}
+                              </span>
+                            </div>
+                            {item.notes && (
+                              <div className="text-xs text-[#8a8f98] bg-[#141516] border border-[#23252a] rounded px-2.5 py-1.5 mt-1.5 flex items-start gap-1.5">
+                                <svg className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span className="truncate italic">"{item.notes}"</span>
+                              </div>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Card Secondary details: Payment Mode & Status */}
+                    <div className="px-4 py-2 bg-[#010102] border-t border-[#23252a] flex items-center justify-between text-xs font-mono text-[#8a8f98]">
+                      <span>{formatPaymentMode(order.payment_mode)}</span>
                       <span
-                        className={`inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 mt-2 rounded-md ${
-                          order.status === 'received'
-                            ? 'bg-blue-950/40 text-blue-400 border border-blue-900/40'
-                            : order.status === 'preparing'
-                            ? 'bg-amber-950/40 text-amber-400 border border-amber-900/40'
-                            : order.status === 'ready'
-                            ? 'bg-purple-950/40 text-purple-400 border border-purple-900/40'
-                            : 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/40'
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${
+                          order.payment_status === 'paid'
+                            ? 'text-[#27a644] bg-[#27a644]/10 border-[#27a644]/20'
+                            : order.payment_status.startsWith('pending')
+                            ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+                            : 'text-[#8a8f98] bg-[#141516] border-[#23252a]'
                         }`}
                       >
-                        {order.status}
+                        {formatPaymentStatus(order.payment_status)}
                       </span>
                     </div>
-                  </div>
 
-                  {/* Warning if update fails */}
-                  {updateError?.orderId === order.id && (
-                    <div className="bg-red-950/30 border-b border-red-900/20 text-red-400 text-xs px-4 py-2.5 leading-normal">
-                      {updateError.message}
-                    </div>
-                  )}
-
-                  {/* Card Body: Order Items list */}
-                  <div className="flex-1 p-4 space-y-4">
-                    <ul className="space-y-3">
-                      {order.order_items?.map((item) => (
-                        <li key={item.id} className="text-sm">
-                          <div className="flex items-start justify-between space-x-2">
-                            <span className="text-white">
-                              <strong className="text-indigo-400 font-bold mr-2 text-base font-mono">
-                                {item.quantity}x
-                              </strong>
-                              {item.menu_items?.name || 'Unknown Item'}
-                            </span>
-                          </div>
-                          {item.notes && (
-                            <div className="flex items-center space-x-1.5 text-xs text-amber-500/80 bg-amber-500/5 border border-amber-500/10 rounded px-2 py-1 mt-1.5 italic">
-                              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                              </svg>
-                              <span className="truncate">"{item.notes}"</span>
-                            </div>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Card Secondary details: Payment Mode & Status */}
-                  <div className="px-4 py-2.5 bg-[#151515] border-t border-[#222222] flex items-center justify-between text-[11px] text-[#666666] font-medium font-mono">
-                    <span className="truncate" title={`Mode: ${order.payment_mode}`}>
-                      {formatPaymentMode(order.payment_mode)}
-                    </span>
-                    <span
-                      className={`${
-                        order.payment_status === 'paid'
-                          ? 'text-emerald-500'
-                          : order.payment_status.startsWith('pending')
-                          ? 'text-amber-500'
-                          : 'text-[#888888]'
-                      }`}
-                    >
-                      {formatPaymentStatus(order.payment_status)}
-                    </span>
-                  </div>
-
-                  {/* Card Footer: Status Action Controls */}
-                  <div className="p-3 bg-[#1e1e1e] border-t border-[#262626] flex flex-col gap-2">
-                    {/* Primary Flow Stepper Button */}
-                    {order.status === 'received' && (
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateStatus(order.id, 'preparing')}
-                        className="w-full py-2 px-3 text-xs font-semibold text-white bg-[#0007cd] hover:bg-[#0005a3] rounded-md transition-colors duration-150 flex items-center justify-center space-x-1"
-                      >
-                        <span>Start Preparing</span>
-                        <span>⚡</span>
-                      </button>
-                    )}
-
-                    {order.status === 'preparing' && (
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateStatus(order.id, 'ready')}
-                        className="w-full py-2 px-3 text-xs font-semibold text-zinc-950 bg-amber-400 hover:bg-amber-500 rounded-md transition-colors duration-150 flex items-center justify-center space-x-1"
-                      >
-                        <span>Mark as Ready</span>
-                        <span>🍽️</span>
-                      </button>
-                    )}
-
-                    {order.status === 'ready' && (
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateStatus(order.id, 'served')}
-                        className="w-full py-2 px-3 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors duration-150 flex items-center justify-center space-x-1"
-                      >
-                        <span>Complete & Serve</span>
-                        <span>✔️</span>
-                      </button>
-                    )}
-
-                    {order.payment_mode === 'cash_at_counter' && order.payment_status === 'pending_cash' && (
-                      <button
-                        type="button"
-                        onClick={() => handleMarkPaidCash(order.id)}
-                        className="w-full py-2 px-3 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors duration-150 flex items-center justify-center space-x-1 cursor-pointer"
-                      >
-                        <span>Mark as Paid (Cash)</span>
-                        <span>💵</span>
-                      </button>
-                    )}
-
-                    {/* Secondary Status Stepper Options (Allowing custom state jumps or cancels) */}
-                    <div className="flex items-center justify-between gap-1 mt-1 border-t border-[#2a2a2a] pt-2">
-                      {order.status !== 'received' && (
+                    {/* Card Footer: Status Action Controls (Linear button specs) */}
+                    <div className="p-3 bg-[#0f1011] border-t border-[#23252a] flex flex-col gap-2">
+                      {/* Primary Flow Stepper Button (button-primary style from DESIGN.md) */}
+                      {order.status === 'received' && (
                         <button
                           type="button"
-                          onClick={() => handleUpdateStatus(order.id, 'received')}
-                          className="flex-1 py-1 text-[10px] text-[#888888] hover:text-white hover:bg-zinc-800 rounded transition-all font-medium"
-                          title="Reset to Received status"
+                          onClick={() => handleUpdateStatus(order.id, 'preparing')}
+                          className="w-full py-2 px-3 text-xs font-medium text-white bg-[#5e6ad2] hover:bg-[#828fff] active:bg-[#5e69d1] rounded-md transition-colors flex items-center justify-center gap-1.5 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5e6ad2]"
                         >
-                          Reset
+                          <span>Start Preparing</span>
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
                         </button>
                       )}
-                      
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (confirm('Are you sure you want to cancel this order?')) {
-                            handleUpdateStatus(order.id, 'cancelled')
-                          }
-                        }}
-                        className="py-1 px-2 text-[10px] text-red-500 hover:text-white hover:bg-red-950/30 rounded transition-all font-medium ml-auto"
-                        title="Cancel this order"
-                      >
-                        Cancel Order
-                      </button>
+
+                      {order.status === 'preparing' && (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStatus(order.id, 'ready')}
+                          className="w-full py-2 px-3 text-xs font-medium text-white bg-[#5e6ad2] hover:bg-[#828fff] active:bg-[#5e69d1] rounded-md transition-colors flex items-center justify-center gap-1.5 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5e6ad2]"
+                        >
+                          <span>Mark as Ready</span>
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                      )}
+
+                      {order.status === 'ready' && (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStatus(order.id, 'served')}
+                          className="w-full py-2 px-3 text-xs font-medium text-white bg-[#27a644] hover:bg-[#27a644]/90 active:bg-[#27a644]/80 rounded-md transition-colors flex items-center justify-center gap-1.5 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#27a644]"
+                        >
+                          <span>Complete & Serve</span>
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                      )}
+
+                      {order.payment_mode === 'cash_at_counter' && order.payment_status === 'pending_cash' && (
+                        <button
+                          type="button"
+                          onClick={() => handleMarkPaidCash(order.id)}
+                          className="w-full py-2 px-3 text-xs font-medium text-[#f7f8f8] bg-[#141516] hover:bg-[#18191a] border border-[#23252a] hover:border-[#34343a] rounded-md transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <span>Mark as Paid (Cash)</span>
+                          <svg className="w-3.5 h-3.5 text-[#27a644]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </button>
+                      )}
+
+                      {/* Secondary Status Stepper Options */}
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#23252a]">
+                        {order.status !== 'received' && (
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateStatus(order.id, 'received')}
+                            className="py-1 px-2 text-[11px] font-medium text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[#141516] rounded transition-colors"
+                            title="Reset to Received status"
+                          >
+                            Reset
+                          </button>
+                        )}
+                        
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm('Are you sure you want to cancel this order?')) {
+                              handleUpdateStatus(order.id, 'cancelled')
+                            }
+                          }}
+                          className="py-1 px-2 text-[11px] font-medium text-[#8a8f98] hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors ml-auto"
+                          title="Cancel this order"
+                        >
+                          Cancel Order
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            })
+                )
+              })
             })()}
           </div>
         )}
