@@ -332,7 +332,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
             </p>
             <button
               onClick={handleOpenAdd}
-              className="text-xs text-white bg-[#0007cd] hover:bg-[#0005a3] px-4 py-2 rounded-md font-semibold transition-all shadow-md focus-visible:ring-2 focus-visible:ring-[#0007cd] cursor-pointer"
+              className="text-xs text-white bg-[#5e6ad2] hover:bg-[#828fff] active:bg-[#5e69d1] px-4 py-2 rounded-md font-medium transition-colors shadow-sm focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none cursor-pointer"
             >
               Add Your First Menu Item
             </button>
@@ -344,7 +344,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                 
                 {/* Category Header */}
                 <div className="flex items-center space-x-3 border-b border-[#222222] pb-2.5">
-                  <div className="w-1.5 h-6 bg-[#0007cd] rounded-sm" />
+                  <div className="w-1.5 h-6 bg-[#5e6ad2] rounded-sm" />
                   <h2 className="text-lg font-bold text-white tracking-tight">
                     {categoryName}
                   </h2>
@@ -413,7 +413,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                             <button
                               type="button"
                               onClick={() => handleOpenEdit(item)}
-                              className="text-xs text-[#a8a8a8] hover:text-white transition-[color,background-color] bg-[#222222] border border-[#333333] px-2.5 py-1 rounded-md font-medium cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
+                              className="text-xs text-[#8a8f98] hover:text-[#f7f8f8] transition-colors bg-[#141516] border border-[#23252a] hover:border-[#34343a] px-2.5 py-1 rounded-md font-medium cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none"
                             >
                               Edit
                             </button>
@@ -438,7 +438,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                                 onChange={() => handleToggleAvailable(item.id, item.is_available)}
                                 className="sr-only peer" 
                               />
-                              <div className="w-9 h-5 bg-[#222222] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#888888] after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-[transform,background-color] peer-checked:bg-[#0007cd] peer-checked:after:bg-white peer-checked:after:border-transparent peer-focus-visible:ring-2 peer-focus-visible:ring-[#0007cd] peer-focus-visible:outline-none" />
+                              <div className="w-9 h-5 bg-[#141516] border border-[#23252a] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#8a8f98] after:border-[#23252a] after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#5e6ad2] peer-checked:after:bg-white peer-checked:after:border-transparent peer-focus-visible:ring-2 peer-focus-visible:ring-[#5e6ad2] peer-focus-visible:outline-none" />
                             </label>
                           </div>
                         </div>
@@ -515,7 +515,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                     placeholder="299.00"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full h-11 px-4 bg-[#222222] text-white border border-[#333333] rounded-md focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all placeholder:text-[#666666] text-sm font-mono"
+                    className="w-full h-10 px-3.5 bg-[#141516] text-[#f7f8f8] border border-[#23252a] rounded-md focus:outline-none focus:border-[#5e6ad2] focus:ring-1 focus:ring-[#5e6ad2]/50 transition-colors placeholder:text-[#62666d] text-sm font-mono"
                   />
                 </div>
 
@@ -538,7 +538,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                       // Slight delay to allow clicking suggestions
                       setTimeout(() => setShowCategorySuggestions(false), 200)
                     }}
-                    className="w-full h-11 px-4 bg-[#222222] text-white border border-[#333333] rounded-md focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all placeholder:text-[#666666] text-sm"
+                    className="w-full h-11 px-4 bg-[#222222] text-white border border-[#333333] rounded-md focus:outline-none focus:border-[#5e6ad2] focus:ring-1 focus:ring-[#5e6ad2] transition-all placeholder:text-[#666666] text-sm"
                   />
                   {/* Suggestion Dropdown */}
                   {showCategorySuggestions && filteredSuggestions.length > 0 && (
@@ -548,7 +548,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                           <button
                             type="button"
                             onMouseDown={() => setCategory(suggestion)}
-                            className="w-full text-left px-4 py-2 text-xs text-[#a8a8a8] hover:bg-[#0007cd] hover:text-white transition-colors cursor-pointer"
+                            className="w-full text-left px-4 py-2 text-xs text-[#a8a8a8] hover:bg-[#5e6ad2] hover:text-white transition-colors cursor-pointer"
                           >
                             {suggestion}
                           </button>
@@ -570,7 +570,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  className="w-full p-4 bg-[#222222] text-white border border-[#333333] rounded-md focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-all placeholder:text-[#666666] text-sm resize-none"
+                  className="w-full p-4 bg-[#222222] text-white border border-[#333333] rounded-md focus:outline-none focus:border-[#5e6ad2] focus:ring-1 focus:ring-[#5e6ad2] transition-all placeholder:text-[#666666] text-sm resize-none"
                 />
               </div>
 
@@ -688,7 +688,7 @@ export function MenuManager({ restaurantId, restaurantName, initialMenuItems }: 
                 type="button"
                 onClick={handleSaveSubmit}
                 disabled={isPendingSave || uploadStatus === 'uploading'}
-                className="text-xs text-white bg-[#0007cd] hover:bg-[#0005a3] px-5 py-2.5 rounded-md font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1.5"
+                className="text-xs text-white bg-[#5e6ad2] hover:bg-[#828fff] active:bg-[#5e69d1] px-5 py-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none"
               >
                 {isPendingSave ? (
                   <>

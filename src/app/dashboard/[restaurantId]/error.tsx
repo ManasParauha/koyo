@@ -17,35 +17,30 @@ export default function DashboardErrorBoundary({ error, reset }: ErrorProps) {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#0f0f0f] text-white font-sans relative overflow-hidden">
-      {/* Subtle radial spotlight glow background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#0007cd]/5 rounded-full blur-[120px] pointer-events-none z-0" />
+      {/* Subtle Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#5e6ad2]/5 rounded-full blur-[120px] pointer-events-none z-0" />
 
-      <div className="max-w-lg w-full bg-[#181818] border border-[#222222] p-8 rounded-xl shadow-2xl relative z-10 space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-[#ff4d4d]/10 border border-[#ff4d4d]/20 text-[#ff4d4d] shrink-0">
-            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#222222] border border-[#333333] rounded-full text-red-400">
-              System Error
-            </span>
-            <h1 className="text-lg font-semibold tracking-tight text-white mt-1.5">
-              Kitchen Dashboard Crashed
-            </h1>
-          </div>
+      <div className="relative z-10 max-w-md w-full bg-[#0f1011] border border-[#23252a] p-8 rounded-xl shadow-2xl text-center space-y-6">
+        <div className="w-14 h-14 bg-[#141516] border border-[#23252a] text-[#5e6ad2] rounded-full flex items-center justify-center mx-auto">
+          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
         </div>
 
-        <p className="text-[#a8a8a8] text-sm leading-relaxed">
-          An error occurred while rendering the kitchen feed or settings page. Active subscriptions or local updates might have lost connection.
-        </p>
+        <div className="space-y-2">
+          <h2 className="text-xl font-semibold text-[#f7f8f8] tracking-tight">
+            Dashboard Error Encountered
+          </h2>
+          <p className="text-xs text-[#8a8f98] leading-relaxed">
+            {error.message || 'An unexpected error occurred while loading this section.'}
+          </p>
+        </div>
 
         {/* Collapsible Error Debug Pane */}
-        <div className="border border-[#222222] rounded-lg overflow-hidden bg-[#0a0a0a]">
+        <div className="border border-[#23252a] rounded-lg overflow-hidden bg-[#0a0a0a]">
           <button
             onClick={() => setShowDetails(!showDetails)}
-            className="w-full flex items-center justify-between px-4 py-3 text-xs text-[#a8a8a8] hover:bg-[#111] transition-colors focus:outline-none"
+            className="w-full flex items-center justify-between px-4 py-3 text-xs text-[#8a8f98] hover:bg-[#141516] transition-colors focus:outline-none"
           >
             <span>Technical Details</span>
             <svg

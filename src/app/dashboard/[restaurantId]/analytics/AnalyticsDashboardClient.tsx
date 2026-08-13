@@ -270,8 +270,8 @@ export function AnalyticsDashboardClient({
               <button
                 type="button"
                 onClick={() => setRange('today')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-[color,background-color] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none ${
-                  range === 'today' ? 'bg-[#0007cd] text-white' : 'text-[#a8a8a8] hover:text-white'
+                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
+                  range === 'today' ? 'bg-[#5e6ad2] text-white' : 'text-[#8a8f98] hover:text-[#f7f8f8]'
                 }`}
               >
                 Today
@@ -279,26 +279,26 @@ export function AnalyticsDashboardClient({
               <button
                 type="button"
                 onClick={() => setRange('7days')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-[color,background-color] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none ${
-                  range === '7days' ? 'bg-[#0007cd] text-white' : 'text-[#a8a8a8] hover:text-white'
+                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
+                  range === '7days' ? 'bg-[#5e6ad2] text-white' : 'text-[#8a8f98] hover:text-[#f7f8f8]'
                 }`}
               >
-                Last 7 Days
+                7 Days
               </button>
               <button
                 type="button"
                 onClick={() => setRange('30days')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-[color,background-color] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none ${
-                  range === '30days' ? 'bg-[#0007cd] text-white' : 'text-[#a8a8a8] hover:text-white'
+                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
+                  range === '30days' ? 'bg-[#5e6ad2] text-white' : 'text-[#8a8f98] hover:text-[#f7f8f8]'
                 }`}
               >
-                Last 30 Days
+                30 Days
               </button>
               <button
                 type="button"
                 onClick={() => setRange('custom')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-[color,background-color] cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none ${
-                  range === 'custom' ? 'bg-[#0007cd] text-white' : 'text-[#a8a8a8] hover:text-white'
+                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
+                  range === 'custom' ? 'bg-[#5e6ad2] text-white' : 'text-[#8a8f98] hover:text-[#f7f8f8]'
                 }`}
               >
                 Custom Range
@@ -314,7 +314,7 @@ export function AnalyticsDashboardClient({
                     onChange={(e) => setCustomStart(e.target.value)}
                     required
                     aria-label="Start Date"
-                    className="w-full min-w-0 bg-[#0f0f0f] border border-[#222222] text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0007cd] focus-visible:ring-1 focus-visible:ring-[#0007cd] transition-[border-color,box-shadow] font-mono"
+                    className="w-full min-w-0 bg-[#141516] border border-[#23252a] text-xs text-[#f7f8f8] rounded-md px-2.5 py-1.5 focus:outline-none focus:border-[#5e6ad2] focus-visible:ring-1 focus-visible:ring-[#5e6ad2] transition-colors font-mono"
                   />
                   <span className="text-xs text-[#a8a8a8] shrink-0">to</span>
                   <input
@@ -323,12 +323,12 @@ export function AnalyticsDashboardClient({
                     onChange={(e) => setCustomEnd(e.target.value)}
                     required
                     aria-label="End Date"
-                    className="w-full min-w-0 bg-[#0f0f0f] border border-[#222222] text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0007cd] focus-visible:ring-1 focus-visible:ring-[#0007cd] transition-[border-color,box-shadow] font-mono"
+                    className="w-full min-w-0 bg-[#141516] border border-[#23252a] text-xs text-[#f7f8f8] rounded-md px-2.5 py-1.5 focus:outline-none focus:border-[#5e6ad2] focus-visible:ring-1 focus-visible:ring-[#5e6ad2] transition-colors font-mono"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto text-xs bg-[#0007cd] hover:bg-[#0005a3] text-white px-3.5 py-1.5 rounded-lg transition-[color,background-color] font-semibold text-center cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
+                  className="w-full sm:w-auto text-xs bg-[#5e6ad2] hover:bg-[#828fff] active:bg-[#5e69d1] text-white px-3.5 py-1.5 rounded-md transition-colors font-medium text-center cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none"
                 >
                   Apply
                 </button>
