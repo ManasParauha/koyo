@@ -4,6 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import QRCode from 'qrcode'
 import { PrintButton } from './PrintButton'
+import { TablePlacardGrid } from './TablePlacardGrid'
 
 interface PageProps {
   params: Promise<{
@@ -20,8 +21,8 @@ async function getQRCodeDataUrl(restaurantId: string, tableId: string) {
     margin: 2,
     color: {
       dark: '#000000',
-      light: '#ffffff'
-    }
+      light: '#ffffff',
+    },
   })
 }
 
@@ -31,7 +32,9 @@ export default async function PrintTablesPage({ params }: PageProps) {
   const supabase = await createClient()
 
   // 1. Fetch current user session to ensure authenticated
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) {
     redirect('/dashboard/login')
   }
@@ -98,100 +101,70 @@ export default async function PrintTablesPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-[#010102] text-[#f7f8f8] print:bg-white print:text-black font-sans flex flex-col antialiased selection:bg-[#5e6ad2]/30 selection:text-[#f7f8f8]">
-      {/* Control Panel (Hidden during printing) */}
-      <header className="sticky top-0 z-40 bg-[#0f1011]/90 backdrop-blur-md border-b border-[#23252a] h-14 flex items-center justify-between px-4 sm:px-8 print:hidden">
-        <div className="flex items-center space-x-3 sm:space-x-4">
-          <span className="font-semibold text-[#f7f8f8] text-sm tracking-tight uppercase whitespace-nowrap">
-            Print QR Codes
-          </span>
-          <span className="text-[#34343a] hidden md:inline">|</span>
-          <span className="text-[#8a8f98] text-xs hidden md:inline truncate max-w-[120px] lg:max-w-none">
-            {restaurant.name}
-          </span>
-        </div>
-
-        <div className="flex items-center space-x-2 sm:space-x-3">
+      {/* Control Panel Header (Hidden during printing) */}
+      <header className="sticky top-0 z-40 bg-[#010102]/90 backdrop-blur-xl border-b border-[#23252a] h-14 flex items-center justify-between px-4 sm:px-8 print:hidden">
+        {/* Left: Breadcrumbs & Restaurant Identity */}
+        <div className="flex items-center space-x-2.5 sm:space-x-3 text-xs">
           <Link
             href={`/dashboard/${restaurantId}/tables`}
-            className="text-xs text-[#8a8f98] hover:text-[#f7f8f8] bg-[#141516] border border-[#23252a] hover:border-[#34343a] px-3 py-1.5 rounded-md transition-colors font-medium focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none"
+            className="text-[#8a8f98] hover:text-[#f7f8f8] transition-colors flex items-center space-x-1 focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none rounded px-1.5 py-0.5"
+            aria-label="Back to Table Manager"
           >
-            <span className="hidden sm:inline">← Back to Tables</span>
-            <span className="sm:hidden">← Back</span>
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span className="hidden sm:inline">Tables</span>
           </Link>
-          <span className="text-[#34343a] hidden sm:inline">|</span>
-          {/* Client component button to trigger print dialog */}
-          <PrintButton />
+
+          <span className="text-[#34343a]">/</span>
+
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold text-[#f7f8f8] tracking-tight uppercase font-mono text-[11px] sm:text-xs">
+              Print Placards
+            </span>
+            <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#141516] text-[#8a8f98] border border-[#23252a]">
+              {restaurant.name}
+            </span>
+          </div>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="flex items-center space-x-3">
+          <PrintButton totalTables={processedTables.length} />
         </div>
       </header>
 
-      {/* Printable Sheet (Standard A4 alignment) */}
-      <main className="flex-1 p-6 sm:p-8 max-w-[1200px] w-full mx-auto print:p-0 print:max-w-none">
-
-        {/* On screen instructions */}
-        <div className="mb-8 p-4 bg-[#0f1011] border border-[#23252a] rounded-xl text-xs text-[#8a8f98] print:hidden max-w-2xl space-y-2 shadow-sm">
-          <p className="font-medium text-[#f7f8f8]">Print Guidelines:</p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Ensure your printer scale is set to <strong className="text-[#f7f8f8]">100%</strong> or <strong className="text-[#f7f8f8]">Fit to page</strong>.</li>
-            <li>Enable <strong className="text-[#f7f8f8]">Background graphics</strong> option in print settings to retain styling.</li>
-            <li>We recommend selecting paper size <strong className="text-[#f7f8f8]">A4</strong> and layout <strong className="text-[#f7f8f8]">Portrait</strong>.</li>
-          </ul>
+      {/* Main Content Area */}
+      <main className="flex-1 p-4 sm:p-8 max-w-[1200px] w-full mx-auto print:p-0 print:max-w-none">
+        {/* Header Title Section (Screen Only) */}
+        <div className="mb-6 print:hidden">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-[#23252a] pb-4">
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#5e6ad2] font-mono">
+                  Placard Export System
+                </span>
+                <span className="h-1 w-1 rounded-full bg-[#5e6ad2]" />
+                <span className="text-xs text-[#8a8f98] font-mono">A4 Ready</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#f7f8f8] mt-1 font-sans">
+                Table QR Display Placards
+              </h1>
+            </div>
+            <p className="text-xs text-[#8a8f98] max-w-sm">
+              High-resolution QR code placards formatted for physical table display stands and menu access.
+            </p>
+          </div>
         </div>
 
-        {processedTables.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center text-[#8a8f98] bg-[#0f1011] border border-[#23252a] rounded-xl">
-            <p className="text-base font-medium text-[#f7f8f8]">No tables to print.</p>
-            <p className="text-xs text-[#8a8f98] mt-1">Please register tables first.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 print:grid-cols-2 print:gap-12 print:bg-white print:text-black">
-            {processedTables.map((table) => {
-              const menuPath = `/menu/${restaurantId}/${table.id}`
-              return (
-                <div
-                  key={table.id}
-                  className="flex flex-col items-center justify-center p-8 bg-[#0f1011] border border-[#23252a] rounded-xl shadow-sm break-inside-avoid print:bg-white print:border-zinc-300 print:text-black print:rounded-none print:shadow-none"
-                >
-                  {/* Outer frame to look like a placard */}
-                  <div className="w-full flex flex-col items-center justify-center space-y-4">
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-[#5e6ad2] print:text-[#5e6ad2] font-mono">
-                      {restaurant.name}
-                    </h4>
-
-                    {/* QR Code Container */}
-                    <div className="bg-white p-3 rounded-xl border border-zinc-200 shadow-inner flex items-center justify-center w-52 h-52 print:w-56 print:h-56 print:rounded-none print:border-none print:shadow-none">
-                      {table.qr_code_url ? (
-                        <img
-                          src={table.qr_code_url}
-                          alt={`QR Code Table ${table.table_number}`}
-                          className="w-full h-full object-contain"
-                        />
-                      ) : (
-                        <div className="bg-zinc-100 w-full h-full rounded" />
-                      )}
-                    </div>
-
-                    {/* Placard details */}
-                    <div className="text-center space-y-1">
-                      <h3 className="text-2xl font-black text-[#f7f8f8] print:text-black tracking-tight font-mono uppercase">
-                        Table {table.table_number}
-                      </h3>
-                      <p className="text-[10px] text-[#8a8f98] print:text-zinc-500 font-mono tracking-wider truncate w-full max-w-[220px]">
-                        {baseDomain.replace(/^https?:\/\//, '')}{menuPath}
-                      </p>
-                    </div>
-
-                    <div className="w-12 h-0.5 bg-[#5e6ad2] print:bg-[#5e6ad2]" />
-                    <p className="text-[9px] text-[#8a8f98] print:text-zinc-400 font-medium tracking-wide uppercase text-center font-mono">
-                      Scan QR Code to Order & Pay
-                    </p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+        {/* Table Placard Interactive Grid & Specs */}
+        <TablePlacardGrid
+          tables={processedTables}
+          restaurantName={restaurant.name}
+          restaurantId={restaurantId}
+          baseDomain={baseDomain}
+        />
       </main>
     </div>
   )
 }
-
