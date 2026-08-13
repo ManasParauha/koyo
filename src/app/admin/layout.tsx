@@ -22,18 +22,13 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-canvas text-ink-muted font-sans flex flex-col antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-canvas text-ink-muted font-sans flex flex-col antialiased selection:bg-primary/20 selection:text-ink">
       {/* Top Navbar */}
       <AdminNav email={user?.email || null} />
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-        {/* Spotlight Glow Backdrop */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none z-0" />
-
-        <div className="relative z-10">
-          {children}
-        </div>
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
       </main>
 
       {/* Footer */}

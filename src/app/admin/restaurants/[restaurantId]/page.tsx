@@ -69,7 +69,7 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
       <div>
         <Link
           href="/admin/restaurants"
-          className="inline-flex items-center space-x-1 text-xs text-[#a8a8a8] hover:text-white transition-colors"
+          className="inline-flex items-center space-x-1.5 text-xs text-ink-subtle hover:text-ink transition-colors font-medium"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -79,28 +79,30 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
       </div>
 
       {/* Header */}
-      <div className="border-b border-[#222222] pb-5">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">{restaurant.name}</h1>
-        <p className="text-xs text-[#a8a8a8] mt-1 font-mono">
-          ID: {restaurant.id}
-        </p>
+      <div className="border-b border-hairline pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-ink font-display">{restaurant.name}</h1>
+          <p className="text-xs text-ink-tertiary mt-1 font-mono">
+            ID: {restaurant.id}
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Columns (Span 2) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Restaurant info card */}
-          <div className="bg-[#181818] border border-[#222222] rounded-lg p-5 space-y-4">
-            <h3 className="text-sm font-semibold text-white">General Information</h3>
+      {/* Section 1: General Information & Staff Accounts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        {/* Restaurant info card (Span 2) */}
+        <div className="lg:col-span-2 bg-surface-1 border border-hairline rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-ink font-display mb-4">General Information</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1">
-                <span className="text-[#666666] font-medium block">UPI ID</span>
-                <span className="font-mono text-white select-all">{restaurant.upi_id || 'Not configured'}</span>
+                <span className="text-ink-tertiary font-mono text-[10px] uppercase tracking-wider block">UPI ID</span>
+                <span className="font-mono text-ink select-all">{restaurant.upi_id || 'Not configured'}</span>
               </div>
               <div className="space-y-1">
-                <span className="text-[#666666] font-medium block">Registered On</span>
-                <span className="text-[#a8a8a8]">
+                <span className="text-ink-tertiary font-mono text-[10px] uppercase tracking-wider block">Registered On</span>
+                <span className="text-ink-muted font-mono">
                   {new Date(restaurant.created_at).toLocaleString(undefined, {
                     dateStyle: 'medium',
                     timeStyle: 'short',
@@ -108,43 +110,82 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
                 </span>
               </div>
               <div className="sm:col-span-2 space-y-1">
-                <span className="text-[#666666] font-medium block">Address</span>
-                <span className="text-[#a8a8a8] leading-relaxed">{restaurant.address || 'No address provided'}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#222222] text-center">
-              <div className="bg-[#0f0f0f] border border-[#222222] p-4 rounded-md">
-                <span className="text-[20px] font-bold text-white block">{tables?.length || 0}</span>
-                <span className="text-[10px] text-[#666666] uppercase font-bold tracking-wider">Tables</span>
-              </div>
-              <div className="bg-[#0f0f0f] border border-[#222222] p-4 rounded-md">
-                <span className="text-[20px] font-bold text-white block">{menuCount || 0}</span>
-                <span className="text-[10px] text-[#666666] uppercase font-bold tracking-wider">Menu Items</span>
+                <span className="text-ink-tertiary font-mono text-[10px] uppercase tracking-wider block">Address</span>
+                <span className="text-ink-muted leading-relaxed">{restaurant.address || 'No address provided'}</span>
               </div>
             </div>
           </div>
 
-          {/* Tables layout card */}
-          <div className="bg-[#181818] border border-[#222222] rounded-lg p-5 space-y-4">
-            <h3 className="text-sm font-semibold text-white">Active Tables ({tables?.length || 0})</h3>
+          <div className="grid grid-cols-2 gap-3.5 pt-4 border-t border-hairline text-center">
+            <div className="bg-surface-2 border border-hairline p-4 rounded-lg">
+              <span className="text-xl font-semibold font-display text-ink block">{tables?.length || 0}</span>
+              <span className="text-[10px] text-ink-tertiary uppercase font-mono tracking-wider">Active Tables</span>
+            </div>
+            <div className="bg-surface-2 border border-hairline p-4 rounded-lg">
+              <span className="text-xl font-semibold font-display text-ink block">{menuCount || 0}</span>
+              <span className="text-[10px] text-ink-tertiary uppercase font-mono tracking-wider">Menu Items</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Linked Staff Accounts list (Span 1) */}
+        <div className="lg:col-span-1 bg-surface-1 border border-hairline rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-ink font-display mb-3">Staff Accounts ({staffItems.length})</h3>
+
+            {staffItems.length === 0 ? (
+              <p className="text-xs text-ink-tertiary text-center py-6">No staff profiles linked.</p>
+            ) : (
+              <div className="divide-y divide-hairline max-h-[220px] overflow-y-auto pr-1">
+                {staffItems.map((item) => (
+                  <div key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs first:pt-0 last:pb-0">
+                    <div className="space-y-0.5 truncate">
+                      <p className="text-ink font-medium truncate font-sans">{item.email}</p>
+                      <p className="text-[10px] text-ink-tertiary font-mono">
+                        Added {new Date(item.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-mono tracking-wide shrink-0 ${
+                      item.role === 'owner'
+                        ? 'bg-primary/10 text-primary border border-primary/20'
+                        : 'bg-surface-2 text-ink-muted border border-hairline'
+                    }`}>
+                      {item.role}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <p className="text-[11px] text-ink-tertiary border-t border-hairline pt-3 font-mono">
+            {staffItems.length} active login{staffItems.length === 1 ? '' : 's'}
+          </p>
+        </div>
+      </div>
+
+      {/* Section 2: Active Tables & Add Staff Form */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        {/* Tables layout card (Span 2) */}
+        <div className="lg:col-span-2 bg-surface-1 border border-hairline rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-ink font-display mb-4">Active Tables ({tables?.length || 0})</h3>
 
             {!tables || tables.length === 0 ? (
-              <div className="p-8 text-center text-xs text-[#666666]">
+              <div className="p-8 text-center text-xs text-ink-tertiary my-auto">
                 No tables registered for this restaurant yet.
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {tables.map((t) => (
-                  <div key={t.id} className="bg-[#0f0f0f] border border-[#222222] p-3 rounded-md text-center text-xs space-y-1 hover:border-[#333333] transition-colors">
-                    <span className="text-[#a8a8a8] block text-[10px] uppercase font-semibold">Table</span>
-                    <span className="text-white font-semibold text-sm">{t.table_number}</span>
+                  <div key={t.id} className="bg-surface-2 border border-hairline p-3 rounded-lg text-center text-xs space-y-1 hover:border-hairline-strong transition-colors">
+                    <span className="text-ink-tertiary block text-[10px] uppercase font-mono tracking-wider">Table</span>
+                    <span className="text-ink font-semibold text-sm font-display">{t.table_number}</span>
                     {t.qr_code_url && (
                       <a
                         href={t.qr_code_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[#00d4ff] hover:underline block text-[10px] pt-1"
+                        className="text-primary hover:text-primary-hover block text-[10px] pt-1 font-mono font-medium transition-colors"
                       >
                         View QR Code
                       </a>
@@ -154,40 +195,15 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
               </div>
             )}
           </div>
+          {tables && tables.length > 0 && (
+            <p className="text-[11px] text-ink-tertiary border-t border-hairline pt-3 font-mono">
+              Total {tables.length} table placard{tables.length === 1 ? '' : 's'} configured
+            </p>
+          )}
         </div>
 
-        {/* Right Column (Span 1) */}
-        <div className="space-y-6">
-          {/* Linked Staff Accounts list */}
-          <div className="bg-[#181818] border border-[#222222] rounded-lg p-5 space-y-4">
-            <h3 className="text-sm font-semibold text-white">Staff Accounts ({staffItems.length})</h3>
-
-            {staffItems.length === 0 ? (
-              <p className="text-xs text-[#666666] text-center py-4">No staff profiles linked.</p>
-            ) : (
-              <div className="divide-y divide-[#222222] max-h-[300px] overflow-y-auto pr-1">
-                {staffItems.map((item) => (
-                  <div key={item.id} className="py-3 flex items-center justify-between gap-4 text-xs first:pt-0 last:pb-0">
-                    <div className="space-y-0.5 truncate">
-                      <p className="text-white font-medium truncate">{item.email}</p>
-                      <p className="text-[10px] text-[#666666]">
-                        Added {new Date(item.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wide ${
-                      item.role === 'owner'
-                        ? 'bg-indigo-950/40 text-indigo-400 border border-indigo-900/30'
-                        : 'bg-[#222222] text-[#a8a8a8] border border-[#333333]'
-                    }`}>
-                      {item.role}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Add Staff Action form component */}
+        {/* Add Staff Action form component (Span 1) */}
+        <div className="lg:col-span-1 flex flex-col">
           <AddStaffForm restaurantId={restaurantId} />
         </div>
       </div>

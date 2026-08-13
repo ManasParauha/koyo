@@ -79,7 +79,6 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
       if (res.error) {
         setFormError(res.error)
       } else if (res.success && res.email && res.password && res.restaurantId) {
-        // Update local list with mock new item for instant update, or wait for refresh
         const newRest: RestaurantSummary = {
           id: res.restaurantId,
           name: name.trim(),
@@ -117,14 +116,22 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
     return val.count ?? 0
   }
 
+  const totalTables = restaurants.reduce((acc, r) => acc + getCount(r.tables), 0)
+  const totalMenuItems = restaurants.reduce((acc, r) => acc + getCount(r.menu_items), 0)
+
   return (
     <div className="space-y-6">
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">Restaurants</h1>
-          <p className="text-sm text-[#a8a8a8] mt-1">
-            Browse and manage all registered restaurant clients.
+          <div className="flex items-center space-x-2">
+            <h1 className="text-2xl font-semibold tracking-tight text-ink font-display">Restaurants</h1>
+            <span className="bg-surface-2 text-ink-subtle border border-hairline text-xs rounded-full px-2.5 py-0.5 font-mono">
+              {restaurants.length}
+            </span>
+          </div>
+          <p className="text-sm text-ink-subtle mt-1 font-sans">
+            Browse and manage all registered restaurant clients across the platform.
           </p>
         </div>
         <button
@@ -132,45 +139,87 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
             setFormError(null)
             setIsModalOpen(true)
           }}
-          className="h-10 bg-[#0007cd] hover:bg-[#0005a3] text-white text-xs font-semibold rounded-md px-5 transition-colors cursor-pointer flex items-center justify-center space-x-1.5 self-start sm:self-auto"
+          className="h-9 bg-primary hover:bg-primary-hover text-on-primary text-xs font-medium rounded-md px-4 transition-all cursor-pointer flex items-center justify-center space-x-1.5 self-start sm:self-auto shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-focus"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
           <span>Add Restaurant</span>
         </button>
       </div>
 
-      {/* Search and Filters */}
-      <div className="w-full bg-[#181818] border border-[#222222] rounded-lg p-4">
-        <div className="relative max-w-md">
-          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#666666]">
+      {/* Overview Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div className="bg-surface-1 border border-hairline rounded-xl p-4 flex items-center justify-between">
+          <div className="space-y-0.5">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-ink-tertiary">Total Clients</span>
+            <p className="text-xl font-semibold font-display text-ink">{restaurants.length}</p>
+          </div>
+          <div className="w-8 h-8 rounded-lg bg-surface-2 border border-hairline flex items-center justify-center text-ink-subtle">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+        </div>
+
+        <div className="bg-surface-1 border border-hairline rounded-xl p-4 flex items-center justify-between">
+          <div className="space-y-0.5">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-ink-tertiary">Active Tables</span>
+            <p className="text-xl font-semibold font-display text-ink">{totalTables}</p>
+          </div>
+          <div className="w-8 h-8 rounded-lg bg-surface-2 border border-hairline flex items-center justify-center text-ink-subtle">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14" />
+            </svg>
+          </div>
+        </div>
+
+        <div className="bg-surface-1 border border-hairline rounded-xl p-4 flex items-center justify-between">
+          <div className="space-y-0.5">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-ink-tertiary">Menu Items</span>
+            <p className="text-xl font-semibold font-display text-ink">{totalMenuItems}</p>
+          </div>
+          <div className="w-8 h-8 rounded-lg bg-surface-2 border border-hairline flex items-center justify-center text-ink-subtle">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="w-full bg-surface-1 border border-hairline rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="relative max-w-md w-full">
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-ink-tertiary">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
           <input
             type="text"
-            placeholder="Search by restaurant name or UPI…"
+            placeholder="Search by restaurant name or UPI ID…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md pl-10 pr-4 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666]"
+            className="w-full h-9 bg-surface-2 border border-hairline rounded-md pl-9 pr-3 text-xs text-ink placeholder:text-ink-tertiary focus:outline-none focus:border-hairline-strong focus:ring-1 focus:ring-primary/40 transition-all font-sans"
           />
+        </div>
+        <div className="text-[11px] text-ink-tertiary font-mono text-right sm:text-left">
+          Showing {filteredRestaurants.length} of {restaurants.length}
         </div>
       </div>
 
-      {/* Restaurants List */}
-      <div className="bg-[#181818] border border-[#222222] rounded-lg overflow-hidden">
+      {/* Restaurants Table Card */}
+      <div className="bg-surface-1 border border-hairline rounded-xl overflow-hidden">
         {filteredRestaurants.length === 0 ? (
           <div className="p-12 text-center space-y-3">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#222222] text-[#666666] border border-[#333333]">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-surface-2 text-ink-tertiary border border-hairline">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
-            <p className="text-sm font-medium text-white">No restaurants found</p>
-            <p className="text-xs text-[#666666] max-w-xs mx-auto">
-              {searchTerm ? 'Try adjusting your search terms.' : 'Onboard your first restaurant to get started.'}
+            <p className="text-sm font-medium text-ink">No restaurants found</p>
+            <p className="text-xs text-ink-tertiary max-w-xs mx-auto">
+              {searchTerm ? 'Try adjusting your search query.' : 'Onboard your first restaurant client to get started.'}
             </p>
           </div>
         ) : (
@@ -179,49 +228,58 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-[#222222] bg-[#1d1d1d]/30 text-[#888888] uppercase tracking-wider font-semibold text-[10px]">
-                    <th className="py-4 px-6">Name</th>
-                    <th className="py-4 px-6">UPI ID</th>
-                    <th className="py-4 px-6 text-center">Tables</th>
-                    <th className="py-4 px-6 text-center">Menu Items</th>
-                    <th className="py-4 px-6">Onboarded</th>
-                    <th className="py-4 px-6 text-right">Actions</th>
+                  <tr className="border-b border-hairline bg-surface-2/40 text-ink-subtle uppercase tracking-wider font-semibold text-[10px]">
+                    <th className="py-3 px-6">Name</th>
+                    <th className="py-3 px-6">UPI ID</th>
+                    <th className="py-3 px-6 text-center">Tables</th>
+                    <th className="py-3 px-6 text-center">Menu Items</th>
+                    <th className="py-3 px-6">Onboarded</th>
+                    <th className="py-3 px-6 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#222222] text-white">
+                <tbody className="divide-y divide-hairline text-ink">
                   {filteredRestaurants.map((r) => (
-                    <tr key={r.id} className="hover:bg-[#222222]/30 transition-[background-color] duration-150 group">
-                      <td className="py-4 px-6">
+                    <tr key={r.id} className="hover:bg-surface-2/50 transition-colors duration-150 group">
+                      <td className="py-3.5 px-6">
                         <Link
                           href={`/admin/restaurants/${r.id}`}
-                          className="font-medium text-white hover:text-[#00d4ff] transition-[color]"
+                          className="flex items-center space-x-3 group-hover:text-ink"
                         >
-                          {r.name}
+                          <div className="w-7 h-7 rounded-md bg-surface-2 border border-hairline text-primary font-display font-semibold text-xs flex items-center justify-center shrink-0 group-hover:border-primary/40 transition-colors">
+                            {r.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-ink group-hover:text-primary transition-colors text-sm">
+                            {r.name}
+                          </span>
                         </Link>
                       </td>
-                      <td className="py-4 px-6 text-[#a8a8a8] font-mono">
+                      <td className="py-3.5 px-6 text-ink-subtle font-mono text-xs">
                         {r.upi_id || '—'}
                       </td>
-                      <td className="py-4 px-6 text-center text-[#a8a8a8] font-medium">
-                        {getCount(r.tables)}
+                      <td className="py-3.5 px-6 text-center">
+                        <span className="bg-surface-2 text-ink-muted border border-hairline text-xs rounded-full px-2.5 py-0.5 font-mono inline-block">
+                          {getCount(r.tables)}
+                        </span>
                       </td>
-                      <td className="py-4 px-6 text-center text-[#a8a8a8] font-medium">
-                        {getCount(r.menu_items)}
+                      <td className="py-3.5 px-6 text-center">
+                        <span className="bg-surface-2 text-ink-muted border border-hairline text-xs rounded-full px-2.5 py-0.5 font-mono inline-block">
+                          {getCount(r.menu_items)}
+                        </span>
                       </td>
-                      <td className="py-4 px-6 text-[#a8a8a8]">
+                      <td className="py-3.5 px-6 text-ink-subtle font-mono text-xs">
                         {new Date(r.created_at).toLocaleDateString(undefined, {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',
                         })}
                       </td>
-                      <td className="py-4 px-6 text-right">
+                      <td className="py-3.5 px-6 text-right">
                         <Link
                           href={`/admin/restaurants/${r.id}`}
-                          className="inline-flex items-center space-x-1 text-xs text-[#a8a8a8] group-hover:text-white transition-[color]"
+                          className="inline-flex items-center space-x-1 text-xs text-ink-subtle group-hover:text-ink transition-colors font-medium"
                         >
                           <span>Manage</span>
-                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                          <svg className="w-3 h-3 text-ink-tertiary group-hover:text-ink group-hover:translate-x-0.5 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                           </svg>
                         </Link>
@@ -233,22 +291,27 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
             </div>
 
             {/* Mobile Cards View */}
-            <div className="md:hidden divide-y divide-[#222222]">
+            <div className="md:hidden divide-y divide-hairline">
               {filteredRestaurants.map((r) => (
                 <div key={r.id} className="p-4 space-y-3">
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="min-w-0 flex-1">
-                      <Link
-                        href={`/admin/restaurants/${r.id}`}
-                        className="font-semibold text-white text-sm hover:text-[#00d4ff] transition-[color]"
-                      >
-                        {r.name}
-                      </Link>
-                      <p className="text-xs text-[#888888] mt-0.5 font-mono truncate max-w-[240px]">
-                        {r.upi_id || '—'}
-                      </p>
+                  <div className="flex justify-between items-start gap-3">
+                    <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+                      <div className="w-7 h-7 rounded-md bg-surface-2 border border-hairline text-primary font-display font-semibold text-xs flex items-center justify-center shrink-0">
+                        {r.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <Link
+                          href={`/admin/restaurants/${r.id}`}
+                          className="font-medium text-ink text-sm hover:text-primary transition-colors truncate block"
+                        >
+                          {r.name}
+                        </Link>
+                        <p className="text-xs text-ink-tertiary font-mono truncate">
+                          {r.upi_id || '—'}
+                        </p>
+                      </div>
                     </div>
-                    <span className="text-[10px] text-[#666666] font-mono shrink-0">
+                    <span className="text-[10px] text-ink-tertiary font-mono shrink-0">
                       {new Date(r.created_at).toLocaleDateString(undefined, {
                         month: 'short',
                         day: 'numeric',
@@ -257,24 +320,24 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 py-2 border-t border-b border-[#222222]/50 text-center text-xs">
+                  <div className="grid grid-cols-2 gap-2 py-2 border-t border-b border-hairline/50 text-center text-xs">
                     <div>
-                      <span className="text-[#666666] block text-[10px] uppercase font-bold tracking-wider">Tables</span>
-                      <span className="text-[#a8a8a8] font-mono font-semibold">{getCount(r.tables)}</span>
+                      <span className="text-ink-tertiary block text-[10px] uppercase font-mono tracking-wider">Tables</span>
+                      <span className="text-ink font-mono font-medium">{getCount(r.tables)}</span>
                     </div>
                     <div>
-                      <span className="text-[#666666] block text-[10px] uppercase font-bold tracking-wider">Menu Items</span>
-                      <span className="text-[#a8a8a8] font-mono font-semibold">{getCount(r.menu_items)}</span>
+                      <span className="text-ink-tertiary block text-[10px] uppercase font-mono tracking-wider">Menu Items</span>
+                      <span className="text-ink font-mono font-medium">{getCount(r.menu_items)}</span>
                     </div>
                   </div>
 
                   <div className="pt-1">
                     <Link
                       href={`/admin/restaurants/${r.id}`}
-                      className="w-full text-center py-2 text-xs text-[#a8a8a8] hover:text-white bg-[#111112] border border-[#222222] rounded-md transition-[color,background-color] font-medium flex items-center justify-center space-x-1.5 focus-visible:ring-2 focus-visible:ring-[#0007cd] focus-visible:outline-none"
+                      className="w-full text-center py-2 text-xs text-ink-muted hover:text-ink bg-surface-2 border border-hairline rounded-md transition-colors font-medium flex items-center justify-center space-x-1.5 focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                       <span>Manage Restaurant</span>
-                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
                     </Link>
@@ -288,16 +351,16 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
 
       {/* Add Restaurant Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="max-w-lg w-full bg-[#181818] border border-[#222222] rounded-xl overflow-hidden shadow-2xl relative animate-in fade-in-50 zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-canvas/80 backdrop-blur-sm animate-in fade-in-50 duration-150">
+          <div className="max-w-lg w-full bg-surface-1 border border-hairline-strong rounded-xl overflow-hidden shadow-2xl relative">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[#222222]">
-              <h2 className="text-base font-semibold text-white">Add New Restaurant</h2>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-hairline bg-surface-2/30">
+              <h2 className="text-sm font-semibold text-ink font-display">Add New Restaurant</h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-[#666666] hover:text-white transition-[color] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd] rounded-md"
+                className="text-ink-tertiary hover:text-ink transition-colors cursor-pointer rounded-md p-1 focus:outline-none focus:ring-1 focus:ring-primary"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -305,15 +368,15 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
 
             {/* Modal Body / Form */}
             <form onSubmit={handleSubmit}>
-              <div className="p-4 sm:p-6 space-y-4">
+              <div className="p-5 space-y-4">
                 {formError && (
-                  <div className="bg-red-950/30 border border-red-900/30 text-red-400 text-xs p-3.5 rounded-lg leading-normal">
+                  <div className="bg-red-950/30 border border-red-900/40 text-red-400 text-xs p-3 rounded-lg leading-normal">
                     {formError}
                   </div>
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#a8a8a8] font-semibold uppercase tracking-wider block">
+                  <label className="text-[10px] text-ink-subtle font-semibold uppercase tracking-wider block font-mono">
                     Restaurant Name *
                   </label>
                   <input
@@ -322,13 +385,13 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                     placeholder="e.g. Bella Italia Bistro"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666]"
+                    className="w-full h-9 bg-surface-2 border border-hairline rounded-md px-3 text-xs text-ink placeholder:text-ink-tertiary focus:outline-none focus:border-hairline-strong focus:ring-1 focus:ring-primary-focus transition-all"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[#a8a8a8] font-semibold uppercase tracking-wider block">
+                    <label className="text-[10px] text-ink-subtle font-semibold uppercase tracking-wider block font-mono">
                       UPI ID (for payments)
                     </label>
                     <input
@@ -336,12 +399,12 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                       placeholder="merchant@upi"
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
-                      className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666]"
+                      className="w-full h-9 bg-surface-2 border border-hairline rounded-md px-3 text-xs text-ink placeholder:text-ink-tertiary focus:outline-none focus:border-hairline-strong focus:ring-1 focus:ring-primary-focus transition-all"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs text-[#a8a8a8] font-semibold uppercase tracking-wider block">
+                    <label className="text-[10px] text-ink-subtle font-semibold uppercase tracking-wider block font-mono">
                       Owner Email * (First login)
                     </label>
                     <input
@@ -350,13 +413,13 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                       placeholder="owner@restaurant.com"
                       value={ownerEmail}
                       onChange={(e) => setOwnerEmail(e.target.value)}
-                      className="w-full h-10 bg-[#0f0f0f] border border-[#222222] rounded-md px-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666]"
+                      className="w-full h-9 bg-surface-2 border border-hairline rounded-md px-3 text-xs text-ink placeholder:text-ink-tertiary focus:outline-none focus:border-hairline-strong focus:ring-1 focus:ring-primary-focus transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#a8a8a8] font-semibold uppercase tracking-wider block">
+                  <label className="text-[10px] text-ink-subtle font-semibold uppercase tracking-wider block font-mono">
                     Address
                   </label>
                   <textarea
@@ -364,28 +427,28 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     rows={2}
-                    className="w-full bg-[#0f0f0f] border border-[#222222] rounded-md p-3 text-xs focus:outline-none focus:border-[#0007cd] focus:ring-1 focus:ring-[#0007cd] transition-[border-color,box-shadow] text-white placeholder:text-[#666666] resize-none"
+                    className="w-full bg-surface-2 border border-hairline rounded-md p-3 text-xs text-ink placeholder:text-ink-tertiary focus:outline-none focus:border-hairline-strong focus:ring-1 focus:ring-primary-focus transition-all resize-none"
                   />
                 </div>
               </div>
 
               {/* Modal Footer */}
-              <div className="px-4 sm:px-6 py-4 bg-[#1d1d1d]/30 border-t border-[#222222] flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end sm:space-x-3 sm:gap-0">
+              <div className="px-5 py-3.5 bg-surface-2/30 border-t border-hairline flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end sm:space-x-3 sm:gap-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="w-full sm:w-auto h-10 bg-[#222222] hover:bg-[#2a2a2a] text-white border border-[#333333] px-4 rounded-md text-xs font-semibold transition-[color,background-color] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
+                  className="w-full sm:w-auto h-9 bg-surface-2 hover:bg-surface-3 text-ink-muted border border-hairline px-4 rounded-md text-xs font-medium transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full sm:w-auto h-10 bg-[#0007cd] hover:bg-[#0005a3] text-white text-xs font-semibold rounded-md px-5 transition-[color,background-color] cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0007cd]"
+                  className="w-full sm:w-auto h-9 bg-primary hover:bg-primary-hover text-on-primary text-xs font-medium rounded-md px-4 transition-all cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-focus"
                 >
                   {isPending ? (
                     <>
-                      <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
@@ -403,42 +466,42 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
 
       {/* Generated Credentials Success Screen Modal */}
       {createdCredentials && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="max-w-md w-full bg-[#181818] border border-[#0007cd]/30 rounded-xl overflow-hidden shadow-2xl relative p-6 space-y-6 text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-canvas/80 backdrop-blur-md animate-in fade-in-50 duration-150">
+          <div className="max-w-md w-full bg-surface-1 border border-hairline-strong rounded-xl overflow-hidden shadow-2xl relative p-6 space-y-5 text-center">
             {/* Success Icon */}
-            <div className="mx-auto flex items-center justify-center w-14 h-14 rounded-full bg-[#33d17a]/10 text-[#33d17a] border border-[#33d17a]/20">
-              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <div className="mx-auto flex items-center justify-center w-12 h-12 rounded-full bg-semantic-success/10 text-semantic-success border border-semantic-success/20">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
 
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-white">Restaurant Onboarded Successfully</h2>
-              <p className="text-xs text-[#a8a8a8] max-w-sm mx-auto leading-relaxed">
-                Registered <span className="text-white font-medium">{createdCredentials.restaurantName}</span>. Copy the generated temporary credentials below and hand them to the owner.
+            <div className="space-y-1.5">
+              <h2 className="text-base font-semibold text-ink font-display">Restaurant Onboarded</h2>
+              <p className="text-xs text-ink-subtle max-w-sm mx-auto leading-relaxed">
+                Registered <span className="text-ink font-medium">{createdCredentials.restaurantName}</span>. Share the generated temporary credentials below with the restaurant owner.
               </p>
             </div>
 
             {/* Credentials Card */}
-            <div className="bg-[#0f0f0f] border border-[#222222] rounded-lg p-5 text-left font-sans space-y-4 relative">
-              <div className="space-y-1">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-[#666666]">Staff Login Portal</span>
-                <p className="text-xs text-white font-medium break-all">
+            <div className="bg-surface-2 border border-hairline rounded-lg p-4 text-left font-sans space-y-3.5 relative">
+              <div className="space-y-0.5">
+                <span className="text-[9px] uppercase font-mono tracking-wider text-ink-tertiary">Staff Login Portal</span>
+                <p className="text-xs text-ink font-mono font-medium break-all">
                   {window.location.origin}/dashboard/login
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 border-t border-[#1a1a1a]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-hairline">
                 <div className="space-y-0.5">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#666666]">Email Address</span>
-                  <p className="text-xs text-white font-medium break-all">
+                  <span className="text-[9px] uppercase font-mono tracking-wider text-ink-tertiary">Email Address</span>
+                  <p className="text-xs text-ink font-mono font-medium break-all">
                     {createdCredentials.email}
                   </p>
                 </div>
 
                 <div className="space-y-0.5">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#666666]">Temp Password</span>
-                  <p className="text-xs text-[#00d4ff] font-mono font-semibold select-all">
+                  <span className="text-[9px] uppercase font-mono tracking-wider text-ink-tertiary">Temp Password</span>
+                  <p className="text-xs text-primary font-mono font-semibold select-all">
                     {createdCredentials.password}
                   </p>
                 </div>
@@ -446,11 +509,11 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
 
               <button
                 onClick={handleCopyPassword}
-                className="absolute top-4 right-4 text-[#666666] hover:text-white transition-colors cursor-pointer"
+                className="absolute top-3.5 right-3.5 text-ink-tertiary hover:text-ink transition-colors cursor-pointer"
                 title="Copy details"
               >
                 {copied ? (
-                  <span className="text-[10px] text-[#33d17a] font-semibold">Copied!</span>
+                  <span className="text-[10px] text-semantic-success font-medium">Copied!</span>
                 ) : (
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
@@ -461,7 +524,7 @@ export default function RestaurantsClient({ initialRestaurants }: RestaurantsCli
 
             <button
               onClick={() => setCreatedCredentials(null)}
-              className="w-full h-11 bg-[#0007cd] hover:bg-[#0005a3] text-white text-sm font-semibold rounded-md transition-colors cursor-pointer flex items-center justify-center"
+              className="w-full h-9 bg-primary hover:bg-primary-hover text-on-primary text-xs font-medium rounded-md transition-all cursor-pointer flex items-center justify-center shadow-sm"
             >
               Done & Close
             </button>
