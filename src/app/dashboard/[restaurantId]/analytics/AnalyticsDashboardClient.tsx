@@ -90,7 +90,6 @@ export function AnalyticsDashboardClient({
   const fillRevenueGaps = (rawData: any[], start: Date, end: Date, interval: 'hour' | 'day') => {
     if (interval === 'hour') {
       const filled: ChartDataPoint[] = []
-      // 24 hours of today
       for (let i = 0; i < 24; i++) {
         const hDate = new Date(start.getTime() + i * 3600000)
         const label = hDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -247,31 +246,47 @@ export function AnalyticsDashboardClient({
           type="button"
           onClick={fetchAnalytics}
           disabled={loading}
-          className="text-xs bg-[#181818] hover:bg-[#222222] text-white border border-[#222222] px-3 py-1.5 rounded-md font-semibold transition-[color,background-color] flex items-center space-x-1 cursor-pointer disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e6ad2]"
+          className="h-8 px-3 rounded-md text-xs font-medium bg-[#0f1011] hover:bg-[#141516] text-[#f7f8f8] border border-[#23252a] hover:border-[#34343a] transition-all flex items-center space-x-1.5 cursor-pointer disabled:opacity-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5e6ad2]"
         >
-          <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2" />
+          <svg
+            className={`w-3.5 h-3.5 text-[#8a8f98] shrink-0 ${loading ? 'animate-spin' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
           </svg>
           <span className="hidden sm:inline">Refresh</span>
         </button>
       }
     >
-      <div className="p-6 sm:p-8 max-w-[1400px] w-full mx-auto space-y-8">
+      <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] w-full mx-auto space-y-6">
         
-        {/* Date Selector Banner */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#181818] border border-[#222222] rounded-xl p-5">
-          <div className="space-y-1">
-            <h2 className="text-white font-semibold text-base">Date Filter</h2>
-            <p className="text-xs text-[#a8a8a8]">Select analytics reporting window</p>
+        {/* Date Selector Control Rail (Linear Pill-Segment Spec) */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#0f1011] border border-[#23252a] border-t-[#34343a]/60 rounded-xl p-4 sm:p-5 shadow-xs">
+          <div className="space-y-0.5">
+            <div className="text-[11px] font-mono text-[#8a8f98] uppercase tracking-wider font-medium">
+              Reporting Window
+            </div>
+            <h2 className="text-sm font-semibold text-[#f7f8f8] tracking-tight">
+              Date Filter
+            </h2>
           </div>
           
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <div className="flex bg-[#0f0f0f] border border-[#222222] p-1 rounded-lg overflow-x-auto max-w-full whitespace-nowrap scrollbar-none">
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            <div className="flex bg-[#010102] border border-[#23252a] p-1 rounded-full overflow-x-auto max-w-full whitespace-nowrap scrollbar-none">
               <button
                 type="button"
                 onClick={() => setRange('today')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
-                  range === 'today' ? 'bg-[#5e6ad2] text-white' : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                className={`text-xs px-3.5 py-1 rounded-full font-medium transition-all cursor-pointer focus-visible:ring-1 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
+                  range === 'today'
+                    ? 'bg-[#141516] text-[#f7f8f8] border border-[#34343a] shadow-xs'
+                    : 'text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[#0f1011]'
                 }`}
               >
                 Today
@@ -279,8 +294,10 @@ export function AnalyticsDashboardClient({
               <button
                 type="button"
                 onClick={() => setRange('7days')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
-                  range === '7days' ? 'bg-[#5e6ad2] text-white' : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                className={`text-xs px-3.5 py-1 rounded-full font-medium transition-all cursor-pointer focus-visible:ring-1 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
+                  range === '7days'
+                    ? 'bg-[#141516] text-[#f7f8f8] border border-[#34343a] shadow-xs'
+                    : 'text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[#0f1011]'
                 }`}
               >
                 7 Days
@@ -288,8 +305,10 @@ export function AnalyticsDashboardClient({
               <button
                 type="button"
                 onClick={() => setRange('30days')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
-                  range === '30days' ? 'bg-[#5e6ad2] text-white' : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                className={`text-xs px-3.5 py-1 rounded-full font-medium transition-all cursor-pointer focus-visible:ring-1 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
+                  range === '30days'
+                    ? 'bg-[#141516] text-[#f7f8f8] border border-[#34343a] shadow-xs'
+                    : 'text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[#0f1011]'
                 }`}
               >
                 30 Days
@@ -297,8 +316,10 @@ export function AnalyticsDashboardClient({
               <button
                 type="button"
                 onClick={() => setRange('custom')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
-                  range === 'custom' ? 'bg-[#5e6ad2] text-white' : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                className={`text-xs px-3.5 py-1 rounded-full font-medium transition-all cursor-pointer focus-visible:ring-1 focus-visible:ring-[#5e6ad2] focus-visible:outline-none ${
+                  range === 'custom'
+                    ? 'bg-[#141516] text-[#f7f8f8] border border-[#34343a] shadow-xs'
+                    : 'text-[#8a8f98] hover:text-[#f7f8f8] hover:bg-[#0f1011]'
                 }`}
               >
                 Custom Range
@@ -306,7 +327,7 @@ export function AnalyticsDashboardClient({
             </div>
 
             {range === 'custom' && (
-              <form onSubmit={handleApplyCustomRange} className="flex flex-col sm:flex-row sm:items-center gap-2 w-full md:w-auto">
+              <form onSubmit={handleApplyCustomRange} className="flex flex-col sm:flex-row sm:items-center gap-2 w-full lg:w-auto">
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <input
                     type="date"
@@ -314,21 +335,21 @@ export function AnalyticsDashboardClient({
                     onChange={(e) => setCustomStart(e.target.value)}
                     required
                     aria-label="Start Date"
-                    className="w-full min-w-0 bg-[#141516] border border-[#23252a] text-xs text-[#f7f8f8] rounded-md px-2.5 py-1.5 focus:outline-none focus:border-[#5e6ad2] focus-visible:ring-1 focus-visible:ring-[#5e6ad2] transition-colors font-mono"
+                    className="w-full min-w-0 bg-[#0f1011] border border-[#23252a] text-xs text-[#f7f8f8] rounded-md px-2.5 py-1.5 focus:outline-none focus:border-[#5e6ad2] focus:ring-1 focus:ring-[#5e6ad2]/40 transition-colors font-mono"
                   />
-                  <span className="text-xs text-[#a8a8a8] shrink-0">to</span>
+                  <span className="text-xs text-[#62666d] shrink-0 font-mono">to</span>
                   <input
                     type="date"
                     value={customEnd}
                     onChange={(e) => setCustomEnd(e.target.value)}
                     required
                     aria-label="End Date"
-                    className="w-full min-w-0 bg-[#141516] border border-[#23252a] text-xs text-[#f7f8f8] rounded-md px-2.5 py-1.5 focus:outline-none focus:border-[#5e6ad2] focus-visible:ring-1 focus-visible:ring-[#5e6ad2] transition-colors font-mono"
+                    className="w-full min-w-0 bg-[#0f1011] border border-[#23252a] text-xs text-[#f7f8f8] rounded-md px-2.5 py-1.5 focus:outline-none focus:border-[#5e6ad2] focus:ring-1 focus:ring-[#5e6ad2]/40 transition-colors font-mono"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto text-xs bg-[#5e6ad2] hover:bg-[#828fff] active:bg-[#5e69d1] text-white px-3.5 py-1.5 rounded-md transition-colors font-medium text-center cursor-pointer focus-visible:ring-2 focus-visible:ring-[#5e6ad2] focus-visible:outline-none"
+                  className="w-full sm:w-auto text-xs bg-[#5e6ad2] hover:bg-[#828fff] active:bg-[#5e69d1] text-white px-3.5 py-1.5 rounded-md transition-colors font-medium text-center cursor-pointer focus-visible:ring-1 focus-visible:ring-[#5e6ad2] focus-visible:outline-none"
                 >
                   Apply
                 </button>
@@ -338,17 +359,17 @@ export function AnalyticsDashboardClient({
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-[#ff4d4d] p-4 rounded-xl text-sm flex items-start space-x-2">
-            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <div className="bg-[#181011] border border-[#3e1b1e] text-[#f7f8f8] p-4 rounded-lg text-xs flex items-start space-x-3">
+            <svg className="w-4 h-4 text-[#ff4d4d] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <div className="space-y-1.5 flex-1">
-              <span className="font-semibold block">Connection Error</span>
-              <p className="opacity-90">{error}</p>
-              <div className="pt-2">
+              <span className="font-semibold text-white block">Connection Error</span>
+              <p className="text-[#d0d6e0]">{error}</p>
+              <div className="pt-1">
                 <button 
                   onClick={fetchAnalytics}
-                  className="bg-red-500/20 hover:bg-red-500/30 text-white text-xs px-3 py-1 rounded border border-red-500/30 font-semibold transition-all cursor-pointer"
+                  className="bg-[#2b1517] hover:bg-[#3d1c1f] text-[#ff4d4d] text-xs px-2.5 py-1 rounded border border-[#522024] font-medium transition-all cursor-pointer"
                 >
                   Retry Query
                 </button>
@@ -358,134 +379,147 @@ export function AnalyticsDashboardClient({
         )}
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4">
-            <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-            <p className="text-xs text-[#a8a8a8]">Aggregating database analytics...</p>
+          <div className="flex flex-col items-center justify-center py-28 space-y-3 bg-[#0f1011] border border-[#23252a] rounded-xl">
+            <div className="w-8 h-8 border-2 border-[#5e6ad2]/20 border-t-[#5e6ad2] rounded-full animate-spin" />
+            <p className="text-xs text-[#8a8f98] font-mono">Aggregating database metrics…</p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-6">
             
-            {/* KPI Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* KPI Summary Cards Grid (4-up desktop, 2-up tablet, 1-up mobile) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               
               {/* Total Revenue */}
-              <div className="bg-[#181818] border border-[#222222] rounded-xl p-6 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-all duration-300" />
-                <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#888888]">
+              <div className="bg-[#0f1011] hover:bg-[#141516] border border-[#23252a] hover:border-[#34343a] border-t-[#34343a]/60 rounded-lg p-5 transition-all duration-150 relative overflow-hidden group shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] font-mono text-[#8a8f98] uppercase tracking-wider font-medium">
                       Total Revenue
                     </span>
-                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                    <div className="w-7 h-7 rounded-md bg-[#141516] border border-[#23252a] text-[#8a8f98] group-hover:text-[#5e6ad2] group-hover:border-[#5e6ad2]/40 flex items-center justify-center transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="mt-3 mb-1">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-[#f7f8f8] tracking-tight font-sans">
                       ₹{Number(summary?.total_revenue || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </h3>
-                    <p className="text-[11px] text-[#a8a8a8] leading-tight">
-                      Sum of paid orders total amount
-                    </p>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
                   </div>
                 </div>
+                <p className="text-[11px] text-[#62666d] mt-2">
+                  Paid order total in period
+                </p>
               </div>
 
               {/* Total Orders */}
-              <div className="bg-[#181818] border border-[#222222] rounded-xl p-6 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-all duration-300" />
-                <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#888888]">
+              <div className="bg-[#0f1011] hover:bg-[#141516] border border-[#23252a] hover:border-[#34343a] border-t-[#34343a]/60 rounded-lg p-5 transition-all duration-150 relative overflow-hidden group shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] font-mono text-[#8a8f98] uppercase tracking-wider font-medium">
                       Total Orders
                     </span>
-                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                    <div className="w-7 h-7 rounded-md bg-[#141516] border border-[#23252a] text-[#8a8f98] group-hover:text-[#5e6ad2] group-hover:border-[#5e6ad2]/40 flex items-center justify-center transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="mt-3 mb-1">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-[#f7f8f8] tracking-tight font-sans">
                       {Number(summary?.total_orders || 0)}
                     </h3>
-                    <p className="text-[11px] text-[#a8a8a8] leading-tight">
-                      Total placed orders in range
-                    </p>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
                   </div>
                 </div>
+                <p className="text-[11px] text-[#62666d] mt-2">
+                  Placed orders in range
+                </p>
               </div>
 
               {/* Average Order Value */}
-              <div className="bg-[#181818] border border-[#222222] rounded-xl p-6 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl group-hover:bg-cyan-500/10 transition-all duration-300" />
-                <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#888888]">
+              <div className="bg-[#0f1011] hover:bg-[#141516] border border-[#23252a] hover:border-[#34343a] border-t-[#34343a]/60 rounded-lg p-5 transition-all duration-150 relative overflow-hidden group shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] font-mono text-[#8a8f98] uppercase tracking-wider font-medium">
                       Avg Order Value
                     </span>
-                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                    <div className="w-7 h-7 rounded-md bg-[#141516] border border-[#23252a] text-[#8a8f98] group-hover:text-[#5e6ad2] group-hover:border-[#5e6ad2]/40 flex items-center justify-center transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="mt-3 mb-1">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-[#f7f8f8] tracking-tight font-sans">
                       ₹{Number(summary?.avg_order_value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </h3>
-                    <p className="text-[11px] text-[#a8a8a8] leading-tight">
-                      Average total amount per order
-                    </p>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
                   </div>
                 </div>
+                <p className="text-[11px] text-[#62666d] mt-2">
+                  Average revenue per order ticket
+                </p>
               </div>
 
-              {/* Kitchen Efficiency (Served Time) */}
-              <div className="bg-[#181818] border border-[#222222] rounded-xl p-6 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-all duration-300" />
-                <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#888888]">
+              {/* Kitchen Speed */}
+              <div className="bg-[#0f1011] hover:bg-[#141516] border border-[#23252a] hover:border-[#34343a] border-t-[#34343a]/60 rounded-lg p-5 transition-all duration-150 relative overflow-hidden group shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] font-mono text-[#8a8f98] uppercase tracking-wider font-medium">
                       Avg Kitchen Speed
                     </span>
-                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                    <div className="w-7 h-7 rounded-md bg-[#141516] border border-[#23252a] text-[#8a8f98] group-hover:text-[#5e6ad2] group-hover:border-[#5e6ad2]/40 flex items-center justify-center transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="mt-3 mb-1">
+                    <h3 className="text-2xl sm:text-3xl font-semibold text-[#f7f8f8] tracking-tight font-sans">
                       {formatServeTime(Number(summary?.avg_serve_time_seconds || 0))}
                     </h3>
-                    <p className="text-[11px] text-[#a8a8a8] leading-tight">
-                      Average order placement to serve time
-                    </p>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
                   </div>
                 </div>
+                <p className="text-[11px] text-[#62666d] mt-2">
+                  Order placement to fulfillment time
+                </p>
               </div>
 
             </div>
 
-            {/* Visual Charts / Breakdown Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Visual Charts & Technical Breakdown Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
-              {/* Revenue Chart Panel (Takes up 2/3 cols on large screens) */}
+              {/* Revenue Chart + Payment Channels Column */}
               <div className="lg:col-span-2 space-y-6">
+                
+                {/* Revenue Chart Panel */}
                 <CustomRevenueChart data={revenueData} />
 
-                {/* Payment Mode Card */}
-                <div className="bg-[#181818] border border-[#222222] rounded-xl p-5 space-y-5">
-                  <div>
-                    <h3 className="text-white text-sm font-semibold">Payment Modes</h3>
-                    <p className="text-xs text-[#a8a8a8]">Order volume share by payment channel</p>
+                {/* Payment Channels Breakdown Panel */}
+                <div className="bg-[#0f1011] border border-[#23252a] border-t-[#34343a]/60 rounded-lg p-5 sm:p-6 space-y-5 shadow-sm">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-sm font-semibold text-[#f7f8f8] tracking-tight">Payment Channels</h3>
+                      <p className="text-xs text-[#8a8f98] mt-0.5">Order distribution by payment option</p>
+                    </div>
+                    <span className="font-mono text-[11px] text-[#8a8f98] bg-[#141516] border border-[#23252a] px-2 py-0.5 rounded">
+                      {totalOrders} total
+                    </span>
                   </div>
                   
                   <div className="space-y-4">
                     {/* Online Now */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-medium">
-                        <span className="text-white">Online Now (Instant Pay)</span>
-                        <span className="text-white font-mono">{onlineNowCount} <span className="text-[#888888] font-sans">({onlineNowPct.toFixed(1)}%)</span></span>
+                        <span className="text-[#f7f8f8]">Online Instant (Prepaid)</span>
+                        <span className="font-mono text-[#d0d6e0]">
+                          {onlineNowCount} <span className="text-[#62666d]">({onlineNowPct.toFixed(1)}%)</span>
+                        </span>
                       </div>
-                      <div className="w-full bg-[#0f0f0f] h-2 rounded-full overflow-hidden border border-[#222222]">
+                      <div className="w-full bg-[#141516] h-2 rounded-full overflow-hidden border border-[#23252a]">
                         <div
-                          className="bg-indigo-500 h-full rounded-full transition-all duration-500"
+                          className="bg-[#5e6ad2] h-full rounded-full transition-all duration-500"
                           style={{ width: `${onlineNowPct}%` }}
                         />
                       </div>
@@ -494,12 +528,14 @@ export function AnalyticsDashboardClient({
                     {/* Online at End */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-medium">
-                        <span className="text-white">Pay at End (Online)</span>
-                        <span className="text-white font-mono">{onlineAtEndCount} <span className="text-[#888888] font-sans">({onlineAtEndPct.toFixed(1)}%)</span></span>
+                        <span className="text-[#f7f8f8]">Pay at End (Digital)</span>
+                        <span className="font-mono text-[#d0d6e0]">
+                          {onlineAtEndCount} <span className="text-[#62666d]">({onlineAtEndPct.toFixed(1)}%)</span>
+                        </span>
                       </div>
-                      <div className="w-full bg-[#0f0f0f] h-2 rounded-full overflow-hidden border border-[#222222]">
+                      <div className="w-full bg-[#141516] h-2 rounded-full overflow-hidden border border-[#23252a]">
                         <div
-                          className="bg-cyan-500 h-full rounded-full transition-all duration-500"
+                          className="bg-[#7a7fad] h-full rounded-full transition-all duration-500"
                           style={{ width: `${onlineAtEndPct}%` }}
                         />
                       </div>
@@ -508,63 +544,68 @@ export function AnalyticsDashboardClient({
                     {/* Cash */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-medium">
-                        <span className="text-white">Cash at Counter</span>
-                        <span className="text-white font-mono">{cashAtCounterCount} <span className="text-[#888888] font-sans">({cashAtCounterPct.toFixed(1)}%)</span></span>
+                        <span className="text-[#f7f8f8]">Cash at Counter</span>
+                        <span className="font-mono text-[#d0d6e0]">
+                          {cashAtCounterCount} <span className="text-[#62666d]">({cashAtCounterPct.toFixed(1)}%)</span>
+                        </span>
                       </div>
-                      <div className="w-full bg-[#0f0f0f] h-2 rounded-full overflow-hidden border border-[#222222]">
+                      <div className="w-full bg-[#141516] h-2 rounded-full overflow-hidden border border-[#23252a]">
                         <div
-                          className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+                          className="bg-[#27a644] h-full rounded-full transition-all duration-500"
                           style={{ width: `${cashAtCounterPct}%` }}
                         />
                       </div>
                     </div>
                   </div>
                 </div>
+
               </div>
 
-              {/* Popular Items Panel (Takes up 1/3 cols) */}
-              <div className="bg-[#181818] border border-[#222222] rounded-xl p-5 space-y-4 flex flex-col">
+              {/* Popular Items Ranking Panel */}
+              <div className="bg-[#0f1011] border border-[#23252a] border-t-[#34343a]/60 rounded-lg p-5 sm:p-6 space-y-4 flex flex-col shadow-sm">
                 <div>
-                  <h3 className="text-white text-sm font-semibold">Popular Items</h3>
-                  <p className="text-xs text-[#a8a8a8]">Top 10 menu items sold in range</p>
+                  <h3 className="text-sm font-semibold text-[#f7f8f8] tracking-tight">Popular Menu Items</h3>
+                  <p className="text-xs text-[#8a8f98] mt-0.5">Top performing dishes in selected window</p>
                 </div>
 
                 {popularItems.length === 0 ? (
-                  <div className="flex-1 flex flex-col items-center justify-center py-20 text-center opacity-60">
-                    <svg className="w-8 h-8 mb-2 text-[#888888]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                    </svg>
-                    <p className="text-xs font-medium text-white">No Sales Data</p>
-                    <p className="text-[10px] text-[#888888] max-w-[180px] mx-auto mt-0.5">
-                      Items sold during this period will be ranked here.
+                  <div className="flex-1 flex flex-col items-center justify-center py-16 text-center">
+                    <div className="w-8 h-8 rounded-md bg-[#141516] border border-[#23252a] flex items-center justify-center text-[#62666d] mb-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                      </svg>
+                    </div>
+                    <p className="text-xs font-medium text-[#f7f8f8]">No Sales Activity</p>
+                    <p className="text-[11px] text-[#62666d] max-w-[180px] mx-auto mt-0.5 font-mono">
+                      Completed item sales will aggregate here.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-4.5 flex-1 overflow-y-auto">
+                  <div className="space-y-3.5 flex-1 overflow-y-auto pr-1">
                     {popularItems.map((item, idx) => {
                       const maxQty = Number(popularItems[0]?.total_quantity || 1)
                       const itemRatio = maxQty > 0 ? (Number(item.total_quantity) / maxQty) * 100 : 0
                       
                       return (
-                        <div key={idx} className="relative group flex flex-col space-y-1">
+                        <div key={idx} className="relative group flex flex-col space-y-1.5 p-2 rounded-md hover:bg-[#141516] transition-colors border border-transparent hover:border-[#23252a]">
                           <div className="flex items-center justify-between text-xs z-10">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-mono text-indigo-400 font-bold bg-[#0f0f0f] border border-[#222222] w-5 h-5 flex items-center justify-center rounded">
-                                {idx + 1}
+                            <div className="flex items-center space-x-2.5 truncate pr-2">
+                              <span className="font-mono text-[10px] text-[#5e6ad2] font-semibold bg-[#141516] border border-[#23252a] w-5 h-5 flex items-center justify-center rounded shrink-0">
+                                {String(idx + 1).padStart(2, '0')}
                               </span>
-                              <span className="text-white font-medium truncate max-w-[150px] sm:max-w-[180px]">
+                              <span className="text-[#f7f8f8] font-medium truncate">
                                 {item.menu_item_name}
                               </span>
                             </div>
-                            <span className="font-mono text-white font-semibold">
-                              {Number(item.total_quantity)} sold
+                            <span className="font-mono text-xs text-[#d0d6e0] font-semibold shrink-0">
+                              {Number(item.total_quantity)} <span className="text-[10px] text-[#62666d] font-normal">sold</span>
                             </span>
                           </div>
 
-                          {/* Progress bar indicator */}
-                          <div className="w-full bg-[#0f0f0f]/50 h-2 rounded overflow-hidden border border-[#222222]/30">
+                          {/* Linear Hairline Bar Indicator */}
+                          <div className="w-full bg-[#141516] h-1.5 rounded overflow-hidden border border-[#23252a]">
                             <div
-                              className="bg-indigo-500/20 group-hover:bg-indigo-500/35 h-full rounded transition-all duration-300"
+                              className="bg-[#5e6ad2]/40 group-hover:bg-[#5e6ad2] h-full rounded transition-colors duration-200"
                               style={{ width: `${itemRatio}%` }}
                             />
                           </div>
@@ -606,36 +647,37 @@ function CustomRevenueChart({ data }: { data: ChartDataPoint[] }) {
     : ''
 
   return (
-    <div className="relative bg-[#181818] border border-[#222222] rounded-xl p-5 w-full">
-      <div className="flex justify-between items-center mb-4">
+    <div className="relative bg-[#0f1011] border border-[#23252a] border-t-[#34343a]/60 rounded-lg p-5 sm:p-6 w-full shadow-sm space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h3 className="text-white text-sm font-semibold">Revenue Trend</h3>
-          <p className="text-xs text-[#a8a8a8]">Sales trend in selected range</p>
+          <h3 className="text-sm font-semibold text-[#f7f8f8] tracking-tight">Revenue Trend</h3>
+          <p className="text-xs text-[#8a8f98] mt-0.5">Sales trajectory across selected timeframe</p>
         </div>
-        <div className="flex items-center space-x-4 text-xs">
-          <div className="flex items-center space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-            <span className="text-white">Revenue (₹)</span>
+        <div className="flex items-center space-x-3 text-xs font-mono">
+          <div className="flex items-center space-x-1.5 bg-[#141516] border border-[#23252a] px-2.5 py-1 rounded">
+            <span className="w-2 h-2 rounded-full bg-[#5e6ad2]" />
+            <span className="text-[#d0d6e0]">Revenue (₹)</span>
           </div>
         </div>
       </div>
 
-      <div className="relative w-full h-[240px]">
+      <div className="relative w-full h-[230px]">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
           <defs>
             <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#5e6ad2" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#5e6ad2" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
+          {/* Grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
             const y = paddingY + ratio * (height - 2 * paddingY)
             const val = maxRevenue - ratio * maxRevenue
             return (
-              <g key={idx} className="opacity-20">
-                <line x1={paddingX} y1={y} x2={width - paddingX} y2={y} stroke="#a8a8a8" strokeDasharray="3 3" strokeWidth="1" />
-                <text x={paddingX - 8} y={y + 4} fill="#ffffff" fontSize="9" textAnchor="end" className="font-mono">
+              <g key={idx}>
+                <line x1={paddingX} y1={y} x2={width - paddingX} y2={y} stroke="#23252a" strokeDasharray="3 3" strokeWidth="1" />
+                <text x={paddingX - 8} y={y + 3} fill="#62666d" fontSize="9" textAnchor="end" className="font-mono">
                   ₹{Math.round(val)}
                 </text>
               </g>
@@ -643,7 +685,7 @@ function CustomRevenueChart({ data }: { data: ChartDataPoint[] }) {
           })}
 
           {fillD && <path d={fillD} fill="url(#chartGradient)" />}
-          {pathD && <path d={pathD} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+          {pathD && <path d={pathD} fill="none" stroke="#5e6ad2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
 
           {points.map((p, i) => {
             const barWidth = (width - 2 * paddingX) / Math.max(data.length - 1, 1)
@@ -661,17 +703,17 @@ function CustomRevenueChart({ data }: { data: ChartDataPoint[] }) {
                 />
                 
                 {hoveredIdx === i && (
-                  <line x1={p.x} y1={paddingY} x2={p.x} y2={height - paddingY} stroke="#10b981" strokeWidth="1" strokeDasharray="4 4" className="pointer-events-none opacity-40" />
+                  <line x1={p.x} y1={paddingY} x2={p.x} y2={height - paddingY} stroke="#5e6ad2" strokeWidth="1" strokeDasharray="3 3" className="pointer-events-none opacity-60" />
                 )}
 
                 <circle
                   cx={p.x}
                   cy={p.y}
-                  r={hoveredIdx === i ? 4.5 : 2.5}
-                  fill="#0f0f0f"
-                  stroke="#10b981"
+                  r={hoveredIdx === i ? 4 : 2}
+                  fill="#010102"
+                  stroke="#5e6ad2"
                   strokeWidth={hoveredIdx === i ? 2 : 1.5}
-                  className="pointer-events-none transition-all duration-100"
+                  className="pointer-events-none transition-all duration-150"
                 />
               </g>
             )
@@ -689,25 +731,31 @@ function CustomRevenueChart({ data }: { data: ChartDataPoint[] }) {
             if (!shouldShow) return null
             const p = points[i]
             return (
-              <text key={i} x={p.x} y={height - 8} fill="#a8a8a8" fontSize="9" textAnchor="middle" className="font-sans opacity-70">
+              <text key={i} x={p.x} y={height - 6} fill="#62666d" fontSize="9" textAnchor="middle" className="font-mono">
                 {d.label}
               </text>
             )
           })}
         </svg>
 
+        {/* Floating Technical Tooltip */}
         {hoveredIdx !== null && data[hoveredIdx] && (
           <div
-            className="absolute z-10 bg-[#222222] border border-[#333333] p-2.5 rounded-lg shadow-xl text-xs flex flex-col pointer-events-none"
+            className="absolute z-20 bg-[#141516] border border-[#34343a] p-2.5 rounded-md shadow-2xl text-xs flex flex-col pointer-events-none space-y-0.5"
             style={{
               left: `${(points[hoveredIdx].x / width) * 100}%`,
-              top: `${Math.max(10, (points[hoveredIdx].y / height) * 100 - 30)}%`,
+              top: `${Math.max(8, (points[hoveredIdx].y / height) * 100 - 25)}%`,
               transform: 'translate(-50%, -100%)',
               marginTop: '-8px'
             }}
           >
-            <span className="font-semibold text-white mb-0.5">{data[hoveredIdx].label}</span>
-            <span className="text-emerald-400 font-mono">Revenue: ₹{Number(data[hoveredIdx].revenue).toFixed(2)}</span>
+            <span className="font-medium text-[#f7f8f8] text-[11px]">{data[hoveredIdx].label}</span>
+            <span className="text-[#828fff] font-mono font-semibold">
+              Revenue: ₹{Number(data[hoveredIdx].revenue).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+            <span className="text-[#62666d] font-mono text-[10px]">
+              Orders: {data[hoveredIdx].orderCount}
+            </span>
           </div>
         )}
       </div>
