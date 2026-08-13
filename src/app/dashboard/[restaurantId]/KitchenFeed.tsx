@@ -323,10 +323,10 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
             <button
               type="button"
               onClick={() => setActiveFilter('all')}
-              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer outline-none focus:outline-none border ${
                 activeFilter === 'all'
-                  ? 'bg-[#141516] text-[#f7f8f8] shadow-sm border border-[#23252a]'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                  ? 'bg-[#141516] text-[#f7f8f8] border-[#23252a] shadow-sm'
+                  : 'bg-transparent text-[#8a8f98] border-transparent hover:text-[#f7f8f8] hover:bg-[#141516]/50'
               }`}
             >
               <span>All Orders</span>
@@ -338,10 +338,10 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
             <button
               type="button"
               onClick={() => setActiveFilter('received')}
-              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer outline-none focus:outline-none border ${
                 activeFilter === 'received'
-                  ? 'bg-[#141516] text-[#f7f8f8] shadow-sm border border-[#23252a]'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                  ? 'bg-[#141516] text-[#f7f8f8] border-[#23252a] shadow-sm'
+                  : 'bg-transparent text-[#8a8f98] border-transparent hover:text-[#f7f8f8] hover:bg-[#141516]/50'
               }`}
             >
               <span>Received</span>
@@ -355,10 +355,10 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
             <button
               type="button"
               onClick={() => setActiveFilter('preparing')}
-              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer outline-none focus:outline-none border ${
                 activeFilter === 'preparing'
-                  ? 'bg-[#141516] text-[#f7f8f8] shadow-sm border border-[#23252a]'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                  ? 'bg-[#141516] text-[#f7f8f8] border-[#23252a] shadow-sm'
+                  : 'bg-transparent text-[#8a8f98] border-transparent hover:text-[#f7f8f8] hover:bg-[#141516]/50'
               }`}
             >
               <span>Preparing</span>
@@ -372,10 +372,10 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
             <button
               type="button"
               onClick={() => setActiveFilter('ready')}
-              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer ${
+              className={`px-3 py-1.5 sm:py-1 text-xs font-medium rounded-full transition-colors duration-150 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 cursor-pointer outline-none focus:outline-none border ${
                 activeFilter === 'ready'
-                  ? 'bg-[#141516] text-[#f7f8f8] shadow-sm border border-[#23252a]'
-                  : 'text-[#8a8f98] hover:text-[#f7f8f8]'
+                  ? 'bg-[#141516] text-[#f7f8f8] border-[#23252a] shadow-sm'
+                  : 'bg-transparent text-[#8a8f98] border-transparent hover:text-[#f7f8f8] hover:bg-[#141516]/50'
               }`}
             >
               <span>Ready</span>
