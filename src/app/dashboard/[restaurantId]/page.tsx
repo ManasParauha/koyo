@@ -1,5 +1,6 @@
 import React from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { verifySession } from '@/lib/dal'
+import { getSupabaseForSession } from '@/lib/supabase/session-client'
 import { KitchenFeed, Order } from './KitchenFeed'
 
 interface PageProps {
@@ -10,8 +11,8 @@ interface PageProps {
 
 export default async function KitchenDashboardPage({ params }: PageProps) {
   const { restaurantId } = await params
-
-  const supabase = await createClient()
+  const session = await verifySession()
+  const supabase = getSupabaseForSession(session)
 
   // 1. Fetch restaurant details
   const { data: restaurant, error: restaurantError } = await supabase
@@ -22,17 +23,17 @@ export default async function KitchenDashboardPage({ params }: PageProps) {
 
   if (restaurantError || !restaurant) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#0f0f0f] text-white font-sans">
-        <div className="max-w-md w-full bg-[#181818] border border-[#222222] p-8 rounded-xl text-center space-y-6 shadow-2xl">
+      <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#010102] text-white font-sans">
+        <div className="max-w-md w-full bg-[#0f1011] border border-[#23252a] p-8 rounded-xl text-center space-y-6 shadow-2xl">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 text-[#ff4d4d] border border-red-500/20">
             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
           <div className="space-y-2">
-            <h1 className="text-xl font-semibold tracking-tight text-white">Restaurant Not Found</h1>
-            <p className="text-[#a8a8a8] text-sm leading-relaxed">
-              We couldn't find the restaurant dashboard you are looking for. Please verify the URL.
+            <h1 className="text-xl font-semibold tracking-tight text-white font-display">Restaurant Not Found</h1>
+            <p className="text-[#8a8f98] text-sm leading-relaxed">
+              We couldn't find the restaurant dashboard you are looking for. Please verify the URL or permissions.
             </p>
           </div>
         </div>

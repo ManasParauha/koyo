@@ -1,5 +1,6 @@
 import React from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { checkAuthorization } from '@/lib/dal'
+import { getSupabaseForSession } from '@/lib/supabase/session-client'
 import { redirect, notFound } from 'next/navigation'
 import { TableManager } from './TableManager'
 import QRCode from 'qrcode'
@@ -27,26 +28,19 @@ async function getQRCodeDataUrl(restaurantId: string, tableId: string) {
 export default async function TablesDashboardPage({ params }: PageProps) {
   const { restaurantId } = await params
 
-  const supabase = await createClient()
+  // 1. DAL security check for Owner or Manager role
+  const { isAuthorized, reason, session } = await checkAuthorization(['owner', 'manager'], restaurantId)
 
-  // 1. Fetch current user session to ensure authenticated
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/dashboard/login')
+  if (!isAuthorized || !session) {
+    if (reason === 'UNAUTHENTICATED') {
+      redirect('/dashboard/login')
+    }
+    redirect(`/dashboard/${restaurantId}`)
   }
 
-  // 2. Fetch staff details to verify access to this restaurantId
-  const { data: staff } = await supabase
-    .from('staff')
-    .select('restaurant_id')
-    .eq('id', user.id)
-    .single()
+  const supabase = getSupabaseForSession(session)
 
-  if (!staff || staff.restaurant_id !== restaurantId) {
-    redirect('/dashboard/login')
-  }
-
-  // 3. Fetch restaurant details
+  // 2. Fetch restaurant details
   const { data: restaurant, error: restaurantError } = await supabase
     .from('restaurants')
     .select('name')
@@ -57,7 +51,7 @@ export default async function TablesDashboardPage({ params }: PageProps) {
     notFound()
   }
 
-  // 4. Fetch all tables
+  // 3. Fetch all tables
   const { data: tables } = await supabase
     .from('tables')
     .select('id, restaurant_id, table_number, qr_code_url, created_at')
@@ -73,7 +67,7 @@ export default async function TablesDashboardPage({ params }: PageProps) {
     return a.table_number.localeCompare(b.table_number)
   })
 
-  // 5. Auto-generate QR codes for any tables where qr_code_url is missing
+  // 4. Auto-generate QR codes for any tables where qr_code_url is missing
   const processedTables = await Promise.all(
     sortedTables.map(async (table) => {
       if (!table.qr_code_url) {

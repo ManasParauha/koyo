@@ -1,121 +1,59 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { auth } from '@/auth'
+import { NextResponse } from 'next/server'
 
-export default async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+export default auth((req) => {
+  const { nextUrl } = req
+  const path = nextUrl.pathname
+  const session = req.auth
+  const user = session?.user
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  const url = new URL(request.url)
-  const path = url.pathname
-
-  // Match /admin routes
-  const isAdminRoute = path.startsWith('/admin')
-  const isAdminLoginRoute = path === '/admin/login'
-
+  // 1. Admin Root Redirect (/admin -> /admin/restaurants)
   if (path === '/admin') {
-    return NextResponse.redirect(new URL('/admin/restaurants', request.url))
+    return NextResponse.redirect(new URL('/admin/restaurants', req.url))
   }
 
-  if (isAdminLoginRoute) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data: superAdmin } = await supabase
-        .from('super_admins')
-        .select('id')
-        .eq('id', user.id)
-        .single()
+  // 2. Admin Login Route (/admin/login)
+  if (path === '/admin/login') {
+    if (user?.role === 'super_admin') {
+      return NextResponse.redirect(new URL('/admin/restaurants', req.url))
+    }
+    return NextResponse.next()
+  }
 
-      if (superAdmin) {
-        return NextResponse.redirect(new URL('/admin/restaurants', request.url))
+  // 3. Protected Admin Routes (/admin/*)
+  if (path.startsWith('/admin')) {
+    if (!user || user.role !== 'super_admin') {
+      return NextResponse.redirect(new URL('/admin/login', req.url))
+    }
+    return NextResponse.next()
+  }
+
+  // 4. Dashboard Login Route (/dashboard/login)
+  if (path === '/dashboard/login') {
+    if (user) {
+      if (user.role === 'super_admin') {
+        return NextResponse.redirect(new URL('/admin/restaurants', req.url))
+      }
+      if (user.restaurantId) {
+        return NextResponse.redirect(new URL(`/dashboard/${user.restaurantId}`, req.url))
       }
     }
+    return NextResponse.next()
   }
 
-  if (isAdminRoute && !isAdminLoginRoute) {
-    const { data: { user } } = await supabase.auth.getUser()
+  // 5. Protected Dashboard Routes (/dashboard/[restaurantId]/*)
+  if (path.startsWith('/dashboard')) {
     if (!user) {
-      const loginUrl = new URL('/admin/login', request.url)
-      return NextResponse.redirect(loginUrl)
+      return NextResponse.redirect(new URL('/dashboard/login', req.url))
     }
 
-    const { data: superAdmin } = await supabase
-      .from('super_admins')
-      .select('id')
-      .eq('id', user.id)
-      .single()
+    const pathParts = path.split('/').filter(Boolean) // ["dashboard", restaurantId, ...]
+    const targetRestaurantId = pathParts[1]
 
-    if (!superAdmin) {
-      const loginUrl = new URL('/admin/login', request.url)
-      return NextResponse.redirect(loginUrl)
-    }
-  }
-
-  // Match /dashboard/[restaurantId]/... but NOT /dashboard/login
-  const isDashboardRoute = path.startsWith('/dashboard')
-  const isLoginRoute = path === '/dashboard/login'
-
-  if (isLoginRoute) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data: staff } = await supabase
-        .from('staff')
-        .select('restaurant_id')
-        .eq('id', user.id)
-        .single()
-
-      if (staff?.restaurant_id) {
-        return NextResponse.redirect(new URL(`/dashboard/${staff.restaurant_id}`, request.url))
-      }
-    }
-  }
-
-  if (isDashboardRoute && !isLoginRoute) {
-    // Check if authenticated
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      // User is not logged in -> redirect to /dashboard/login
-      const loginUrl = new URL('/dashboard/login', request.url)
-      return NextResponse.redirect(loginUrl)
-    }
-
-    // Authenticated! Now verify if staff record's restaurant_id matches the [restaurantId] in the URL
-    const pathParts = path.split('/').filter(Boolean) // e.g. ["dashboard", "restaurantId", ...]
-    const restaurantId = pathParts[1]
-
-    if (restaurantId && restaurantId !== 'login') {
-      // Fetch staff record from database
-      const { data: staff, error } = await supabase
-        .from('staff')
-        .select('restaurant_id')
-        .eq('id', user.id)
-        .single()
-
-      if (error || !staff || staff.restaurant_id !== restaurantId) {
-        // Logged in but restaurant ID doesn't match!
-        // Return a clean 403 Forbidden page as specified in requirement 4
+    // Super Admin has global access to all restaurant dashboards
+    if (user.role !== 'super_admin') {
+      // Enforce restaurant boundary scoping
+      if (targetRestaurantId && targetRestaurantId !== user.restaurantId) {
         return new NextResponse(
           `<!DOCTYPE html>
           <html lang="en">
@@ -125,8 +63,8 @@ export default async function proxy(request: NextRequest) {
             <title>Access Denied - Kitchen Dashboard</title>
             <style>
               body {
-                background-color: #0f0f0f;
-                color: #ffffff;
+                background-color: #010102;
+                color: #f7f8f8;
                 font-family: ui-sans-serif, system-ui, sans-serif;
                 display: flex;
                 align-items: center;
@@ -136,8 +74,8 @@ export default async function proxy(request: NextRequest) {
               }
               .container {
                 max-width: 400px;
-                background-color: #181818;
-                border: 1px solid #222222;
+                background-color: #0f1011;
+                border: 1px solid #23252a;
                 padding: 32px;
                 border-radius: 12px;
                 text-align: center;
@@ -155,19 +93,10 @@ export default async function proxy(request: NextRequest) {
                 justify-content: center;
                 margin-bottom: 24px;
               }
-              h1 {
-                font-size: 20px;
-                font-weight: 600;
-                margin: 0 0 12px 0;
-              }
-              p {
-                color: #a8a8a8;
-                font-size: 14px;
-                line-height: 1.6;
-                margin: 0 0 24px 0;
-              }
+              h1 { font-size: 20px; font-weight: 600; margin: 0 0 12px 0; }
+              p { color: #8a8f98; font-size: 14px; line-height: 1.6; margin: 0 0 24px 0; }
               .btn {
-                background-color: #0007cd;
+                background-color: #5e6ad2;
                 color: #ffffff;
                 border: none;
                 padding: 10px 18px;
@@ -179,9 +108,7 @@ export default async function proxy(request: NextRequest) {
                 display: inline-block;
                 transition: background-color 0.15s;
               }
-              .btn:hover {
-                background-color: #0005a3;
-              }
+              .btn:hover { background-color: #828fff; }
             </style>
           </head>
           <body>
@@ -203,16 +130,43 @@ export default async function proxy(request: NextRequest) {
           }
         )
       }
+
+      // Sub-route RBAC Checks
+      const subRoute = pathParts[2] // e.g. "analytics", "menu", "tables"
+
+      if (subRoute === 'analytics' || subRoute === 'menu' || subRoute === 'tables') {
+        if (!['owner', 'manager'].includes(user.role)) {
+          return new NextResponse(
+            `<!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <title>403 Forbidden - Role Restricted</title>
+              <style>
+                body { background-color: #010102; color: #f7f8f8; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+                .card { max-width: 400px; background: #0f1011; border: 1px solid #23252a; padding: 32px; border-radius: 12px; text-align: center; }
+                p { color: #8a8f98; }
+                a { color: #5e6ad2; text-decoration: none; font-weight: 500; }
+              </style>
+            </head>
+            <body>
+              <div class="card">
+                <h2>Forbidden Action</h2>
+                <p>Kitchen Staff role does not have permission to view ${subRoute}. Requires Owner or Manager access.</p>
+                <a href="/dashboard/${targetRestaurantId}">Return to Kitchen Feed</a>
+              </div>
+            </body>
+            </html>`,
+            { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } }
+          )
+        }
+      }
     }
   }
 
-  return supabaseResponse
-}
+  return NextResponse.next()
+})
 
 export const config = {
-  matcher: [
-    // Match all dashboard and admin paths
-    '/dashboard/:path*',
-    '/admin/:path*',
-  ],
+  matcher: ['/dashboard/:path*', '/admin/:path*'],
 }

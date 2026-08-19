@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { fetchAnalyticsAction } from './actions'
 
 interface AnalyticsDashboardClientProps {
   restaurantId: string
@@ -145,52 +145,20 @@ export function AnalyticsDashboardClient({
     try {
       setLoading(true)
       setError(null)
-      const supabase = createClient()
       const { start, end, interval } = getDateRange(range, customStart, customEnd)
 
       const startTimeStr = start.toISOString()
       const endTimeStr = end.toISOString()
 
-      // Fetch analytics summary
-      const { data: summaryData, error: summaryErr } = await supabase.rpc(
-        'get_restaurant_analytics_summary',
-        {
-          p_restaurant_id: restaurantId,
-          p_start_time: startTimeStr,
-          p_end_time: endTimeStr,
-        }
-      )
+      const res = await fetchAnalyticsAction(restaurantId, startTimeStr, endTimeStr, interval)
 
-      if (summaryErr) throw summaryErr
+      if (res.error) {
+        throw new Error(res.error)
+      }
 
-      // Fetch popular menu items
-      const { data: itemsData, error: itemsErr } = await supabase.rpc(
-        'get_restaurant_popular_items',
-        {
-          p_restaurant_id: restaurantId,
-          p_start_time: startTimeStr,
-          p_end_time: endTimeStr,
-        }
-      )
-
-      if (itemsErr) throw itemsErr
-
-      // Fetch revenue over time
-      const { data: revOverTimeData, error: revErr } = await supabase.rpc(
-        'get_restaurant_revenue_over_time',
-        {
-          p_restaurant_id: restaurantId,
-          p_start_time: startTimeStr,
-          p_end_time: endTimeStr,
-          p_interval: interval,
-        }
-      )
-
-      if (revErr) throw revErr
-
-      setSummary(summaryData?.[0] || null)
-      setPopularItems(itemsData || [])
-      setRevenueData(fillRevenueGaps(revOverTimeData || [], start, end, interval))
+      setSummary(res.summary || null)
+      setPopularItems(res.popularItems || [])
+      setRevenueData(fillRevenueGaps(res.revenueOverTime || [], start, end, interval))
     } catch (err: any) {
       console.error('Error fetching analytics:', err)
       setError(err.message || 'Failed to load analytics. Make sure the database functions are applied.')

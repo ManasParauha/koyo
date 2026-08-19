@@ -1,6 +1,7 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { checkAuthorization } from '@/lib/dal'
+import { getSupabaseForSession } from '@/lib/supabase/session-client'
 import { revalidatePath } from 'next/cache'
 
 export interface MenuItemData {
@@ -14,25 +15,13 @@ export interface MenuItemData {
   is_available?: boolean
 }
 
-// Helper: Ensure user is authorized staff for the specific restaurant
-async function verifyStaffAccess(restaurantId: string) {
-  const userSupabase = await createClient()
-  const { data: { user } } = await userSupabase.auth.getUser()
-  if (!user) {
-    return { authorized: false, error: 'Unauthorized. Please log in.' }
+// Helper: Ensure caller is authorized owner or manager for the target restaurant
+async function verifyMenuPermission(restaurantId: string) {
+  const authResult = await checkAuthorization(['owner', 'manager'], restaurantId)
+  if (!authResult.isAuthorized || !authResult.session) {
+    return { authorized: false as const, error: 'Forbidden. Owner or Manager role required.', session: null }
   }
-
-  const { data: staff, error } = await userSupabase
-    .from('staff')
-    .select('restaurant_id')
-    .eq('id', user.id)
-    .single()
-
-  if (error || !staff || staff.restaurant_id !== restaurantId) {
-    return { authorized: false, error: 'Forbidden. You do not have access to this restaurant.' }
-  }
-
-  return { authorized: true, user }
+  return { authorized: true as const, error: null, session: authResult.session }
 }
 
 // Action: Create or Update a Menu Item
@@ -48,14 +37,14 @@ export async function upsertMenuItem(restaurantId: string, data: MenuItemData) {
     return { error: 'Price must be a positive number.' }
   }
 
-  // 2. Verify access
-  const access = await verifyStaffAccess(restaurantId)
+  // 2. Verify permission
+  const access = await verifyMenuPermission(restaurantId)
   if (!access.authorized) {
     return { error: access.error }
   }
 
   try {
-    const supabase = await createClient()
+    const supabase = getSupabaseForSession(access.session)
 
     const payload = {
       restaurant_id: restaurantId,
@@ -68,7 +57,7 @@ export async function upsertMenuItem(restaurantId: string, data: MenuItemData) {
       is_available: data.is_available ?? true
     }
 
-    let error;
+    let error
 
     if (data.id) {
       // Update existing item
@@ -76,7 +65,7 @@ export async function upsertMenuItem(restaurantId: string, data: MenuItemData) {
         .from('menu_items')
         .update(payload)
         .eq('id', data.id)
-        .eq('restaurant_id', restaurantId) // security check
+        .eq('restaurant_id', restaurantId)
 
       error = updateError
     } else {
@@ -100,15 +89,15 @@ export async function upsertMenuItem(restaurantId: string, data: MenuItemData) {
   }
 }
 
-// Action: Quick Toggle Availability (Used for Optimistic UI toggle updates)
+// Action: Quick Toggle Availability
 export async function toggleMenuItemAvailability(restaurantId: string, itemId: string, isAvailable: boolean) {
-  const access = await verifyStaffAccess(restaurantId)
+  const access = await verifyMenuPermission(restaurantId)
   if (!access.authorized) {
     return { error: access.error }
   }
 
   try {
-    const supabase = await createClient()
+    const supabase = getSupabaseForSession(access.session)
 
     const { error } = await supabase
       .from('menu_items')
@@ -134,13 +123,13 @@ export async function deleteMenuItem(restaurantId: string, itemId: string) {
     return { error: 'Item ID is required.' }
   }
 
-  const access = await verifyStaffAccess(restaurantId)
+  const access = await verifyMenuPermission(restaurantId)
   if (!access.authorized) {
     return { error: access.error }
   }
 
   try {
-    const supabase = await createClient()
+    const supabase = getSupabaseForSession(access.session)
 
     const { error } = await supabase
       .from('menu_items')

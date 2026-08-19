@@ -1,5 +1,6 @@
 import React from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { checkAuthorization } from '@/lib/dal'
+import { getSupabaseForSession } from '@/lib/supabase/session-client'
 import { redirect, notFound } from 'next/navigation'
 import { AnalyticsDashboardClient } from './AnalyticsDashboardClient'
 
@@ -12,26 +13,20 @@ interface PageProps {
 export default async function AnalyticsDashboardPage({ params }: PageProps) {
   const { restaurantId } = await params
 
-  const supabase = await createClient()
+  // 1. Perform DAL security check for Owner or Manager role
+  const { isAuthorized, reason, session } = await checkAuthorization(['owner', 'manager'], restaurantId)
 
-  // 1. Fetch current user session to ensure authenticated
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/dashboard/login')
+  if (!isAuthorized || !session) {
+    if (reason === 'UNAUTHENTICATED') {
+      redirect('/dashboard/login')
+    }
+    // If forbidden role or wrong restaurant, redirect to main kitchen feed
+    redirect(`/dashboard/${restaurantId}`)
   }
 
-  // 2. Fetch staff details to verify access to this restaurantId
-  const { data: staff } = await supabase
-    .from('staff')
-    .select('restaurant_id')
-    .eq('id', user.id)
-    .single()
+  const supabase = getSupabaseForSession(session)
 
-  if (!staff || staff.restaurant_id !== restaurantId) {
-    redirect('/dashboard/login')
-  }
-
-  // 3. Fetch restaurant details
+  // 2. Fetch restaurant details
   const { data: restaurant, error: restaurantError } = await supabase
     .from('restaurants')
     .select('name')

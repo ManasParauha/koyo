@@ -2,12 +2,11 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signIn } from 'next-auth/react'
 import AuthCard from '@/components/auth/AuthCard'
 
 export default function AdminLoginPage() {
   const router = useRouter()
-  const supabase = createClient()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,34 +20,18 @@ export default function AdminLoginPage() {
     setError(null)
 
     try {
-      // 1. Sign in with password
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
+      // Authenticate via Auth.js credentials provider
+      const res = await signIn('credentials', {
+        email: email.trim().toLowerCase(),
         password,
+        redirect: false,
       })
 
-      if (authError) {
-        throw new Error(authError.message)
+      if (res?.error) {
+        throw new Error(res.error.replace(/^Error:\s*/, ''))
       }
 
-      if (!authData.user) {
-        throw new Error('Authentication failed. No user returned.')
-      }
-
-      // 2. Fetch the super-admin record
-      const { data: superAdmin, error: saError } = await supabase
-        .from('super_admins')
-        .select('id')
-        .eq('id', authData.user.id)
-        .single()
-
-      if (saError || !superAdmin) {
-        // Authenticated but not a super-admin -> sign out and block access
-        await supabase.auth.signOut()
-        throw new Error('Access denied. No super-admin account associated with this email.')
-      }
-
-      // 3. Redirect to the admin dashboard
+      // Successful login -> Redirect to platform admin panel
       router.push('/admin/restaurants')
       router.refresh()
     } catch (err: any) {
@@ -60,7 +43,7 @@ export default function AdminLoginPage() {
   return (
     <AuthCard
       title="Platform Super-Admin"
-      subtitle="Sign in to onboard restaurants and manage accounts."
+      subtitle="Sign in to onboard restaurants and manage platform accounts."
     >
       {error && (
         <div 

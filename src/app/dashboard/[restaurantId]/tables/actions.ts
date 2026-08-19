@@ -1,28 +1,17 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { checkAuthorization } from '@/lib/dal'
+import { getSupabaseForSession } from '@/lib/supabase/session-client'
 import { revalidatePath } from 'next/cache'
 import QRCode from 'qrcode'
 
-// Helper: Ensure user is authorized staff for the specific restaurant
-async function verifyStaffAccess(restaurantId: string) {
-  const userSupabase = await createClient()
-  const { data: { user } } = await userSupabase.auth.getUser()
-  if (!user) {
-    return { authorized: false, error: 'Unauthorized. Please log in.' }
+// Helper: Ensure user is authorized owner or manager for the specific restaurant
+async function verifyTablePermission(restaurantId: string) {
+  const authResult = await checkAuthorization(['owner', 'manager'], restaurantId)
+  if (!authResult.isAuthorized || !authResult.session) {
+    return { authorized: false as const, error: 'Forbidden. Owner or Manager role required.', session: null }
   }
-
-  const { data: staff, error } = await userSupabase
-    .from('staff')
-    .select('restaurant_id')
-    .eq('id', user.id)
-    .single()
-
-  if (error || !staff || staff.restaurant_id !== restaurantId) {
-    return { authorized: false, error: 'Forbidden. You do not have access to this restaurant.' }
-  }
-
-  return { authorized: true, user }
+  return { authorized: true as const, error: null, session: authResult.session }
 }
 
 // Action: Add a new table and generate its QR code
@@ -32,16 +21,16 @@ export async function addTable(restaurantId: string, tableNumber: string) {
   }
 
   // 1. Verify access
-  const access = await verifyStaffAccess(restaurantId)
+  const access = await verifyTablePermission(restaurantId)
   if (!access.authorized) {
     return { error: access.error }
   }
 
   try {
-    const userSupabase = await createClient()
+    const supabase = getSupabaseForSession(access.session)
 
-    // 2. Insert new table row (with null qr_code_url initially)
-    const { data: newTable, error: insertError } = await userSupabase
+    // 2. Insert new table row
+    const { data: newTable, error: insertError } = await supabase
       .from('tables')
       .insert({
         restaurant_id: restaurantId,
@@ -74,7 +63,7 @@ export async function addTable(restaurantId: string, tableNumber: string) {
     })
 
     // 4. Update the row with the base64 data URL
-    const { error: updateError } = await userSupabase
+    const { error: updateError } = await supabase
       .from('tables')
       .update({ qr_code_url: qrDataUrl })
       .eq('id', tableId)
@@ -91,23 +80,23 @@ export async function addTable(restaurantId: string, tableNumber: string) {
   }
 }
 
-// Action: Delete a table and all its associated orders (to handle cascade manually)
+// Action: Delete a table and all its associated orders
 export async function deleteTable(restaurantId: string, tableId: string) {
   if (!tableId) {
     return { error: 'Table ID is required.' }
   }
 
   // 1. Verify access
-  const access = await verifyStaffAccess(restaurantId)
+  const access = await verifyTablePermission(restaurantId)
   if (!access.authorized) {
     return { error: access.error }
   }
 
   try {
-    const userSupabase = await createClient()
+    const supabase = getSupabaseForSession(access.session)
 
-    // 2. Delete all orders linked to this table (satisfying ON DELETE CASCADE constraints manually)
-    const { error: deleteOrdersError } = await userSupabase
+    // 2. Delete all orders linked to this table
+    const { error: deleteOrdersError } = await supabase
       .from('orders')
       .delete()
       .eq('table_id', tableId)
@@ -117,7 +106,7 @@ export async function deleteTable(restaurantId: string, tableId: string) {
     }
 
     // 3. Delete the table row
-    const { error: deleteTableError } = await userSupabase
+    const { error: deleteTableError } = await supabase
       .from('tables')
       .delete()
       .eq('id', tableId)

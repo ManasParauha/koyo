@@ -2,12 +2,11 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signIn, getSession } from 'next-auth/react'
 import AuthCard from '@/components/auth/AuthCard'
 
 export default function LoginPage() {
   const router = useRouter()
-  const supabase = createClient()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,36 +20,34 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      // 1. Sign in user with password
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
+      // 1. Authenticate via Auth.js credentials provider
+      const res = await signIn('credentials', {
+        email: email.trim().toLowerCase(),
         password,
+        redirect: false,
       })
 
-      if (authError) {
-        throw new Error(authError.message)
+      if (res?.error) {
+        throw new Error(res.error.replace(/^Error:\s*/, ''))
       }
 
-      if (!authData.user) {
-        throw new Error('Authentication failed. No user returned.')
+      // 2. Fetch fresh session to obtain target restaurantId
+      const session = await getSession()
+      const restaurantId = (session?.user as any)?.restaurantId
+
+      if ((session?.user as any)?.role === 'super_admin') {
+        router.push('/admin/restaurants')
+        router.refresh()
+        return
       }
 
-      // 2. Fetch the staff record to retrieve the restaurant ID mapping
-      const { data: staff, error: staffError } = await supabase
-        .from('staff')
-        .select('restaurant_id')
-        .eq('id', authData.user.id)
-        .single()
-
-      if (staffError || !staff) {
-        // If authenticated but no matching staff profile found, sign out and block access
-        await supabase.auth.signOut()
-        throw new Error('Access denied. No staff profile associated with this account.')
+      if (restaurantId) {
+        router.push(`/dashboard/${restaurantId}`)
+        router.refresh()
+      } else {
+        router.push('/dashboard/login')
+        router.refresh()
       }
-
-      // 3. Redirect to the staff's specific restaurant dashboard
-      router.push(`/dashboard/${staff.restaurant_id}`)
-      router.refresh()
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred during login.')
       setLoading(false)
@@ -60,7 +57,7 @@ export default function LoginPage() {
   return (
     <AuthCard
       title="Kitchen Staff Portal"
-      subtitle="Sign in to manage live kitchen tickets and orders."
+      subtitle="Sign in to manage live kitchen tickets, orders, and restaurant tables."
     >
       {error && (
         <div 

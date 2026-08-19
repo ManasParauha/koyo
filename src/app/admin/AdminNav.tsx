@@ -2,8 +2,8 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { usePathname } from 'next/navigation'
+import { signOut } from 'next-auth/react'
 
 interface AdminNavProps {
   email: string | null
@@ -11,20 +11,16 @@ interface AdminNavProps {
 
 export default function AdminNav({ email }: AdminNavProps) {
   const pathname = usePathname()
-  const router = useRouter()
-  const supabase = createClient()
 
   if (pathname === '/admin/login') {
     return null
   }
 
-  // Hide nav items if not logged in (e.g. on login page)
+  // Hide nav items if not logged in
   const isLoggedIn = !!email
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/admin/login')
-    router.refresh()
+    await signOut({ callbackUrl: '/admin/login' })
   }
 
   return (

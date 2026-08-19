@@ -9,10 +9,12 @@ interface AddStaffFormProps {
   onStaffAdded?: () => void
 }
 
+type RoleType = 'owner' | 'manager' | 'kitchen'
+
 export default function AddStaffForm({ restaurantId, onStaffAdded }: AddStaffFormProps) {
   const router = useRouter()
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState<'staff' | 'owner'>('staff')
+  const [role, setRole] = useState<RoleType>('kitchen')
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   
@@ -82,7 +84,7 @@ export default function AddStaffForm({ restaurantId, onStaffAdded }: AddStaffFor
             <input
               type="email"
               required
-              placeholder="chef@restaurant.com"
+              placeholder="staff@restaurant.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full h-9 bg-surface-2 text-ink border border-hairline rounded-md px-3 text-xs placeholder:text-ink-tertiary focus:outline-none focus:border-hairline-strong focus:ring-1 focus:ring-primary-focus transition-all font-sans"
@@ -91,15 +93,16 @@ export default function AddStaffForm({ restaurantId, onStaffAdded }: AddStaffFor
 
           <div className="space-y-1.5">
             <label className="text-[10px] text-ink-subtle font-semibold uppercase tracking-wider block font-mono">
-              Dashboard Role
+              Dashboard Role & Access Scope
             </label>
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value as 'staff' | 'owner')}
+              onChange={(e) => setRole(e.target.value as RoleType)}
               className="w-full h-9 bg-surface-2 text-ink border border-hairline rounded-md px-3 text-xs focus:outline-none focus:border-hairline-strong focus:ring-1 focus:ring-primary-focus transition-all font-sans"
             >
-              <option value="staff">Staff (Kitchen Dashboard)</option>
-              <option value="owner">Owner (Full Store Admin)</option>
+              <option value="owner">Owner — Full Store Admin (Analytics, Menu, Tables, Kitchen)</option>
+              <option value="manager">Manager — Operations & Menu (Analytics, Menu, Tables, Kitchen)</option>
+              <option value="kitchen">Kitchen Staff — Kitchen Feed & Ticket Status Only</option>
             </select>
           </div>
 
@@ -114,10 +117,10 @@ export default function AddStaffForm({ restaurantId, onStaffAdded }: AddStaffFor
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                <span>Creating Login...</span>
+                <span>Creating Account...</span>
               </>
             ) : (
-              <span>Add Staff Login</span>
+              <span>Add Staff Member</span>
             )}
           </button>
         </form>

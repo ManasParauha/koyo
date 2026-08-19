@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signOut, useSession } from 'next-auth/react'
 
 interface DashboardLayoutProps {
   restaurantId: string
@@ -29,6 +29,20 @@ export function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   const router = useRouter()
+  const { data: session } = useSession()
+
+  // Dynamic user role & initial
+  const userRole = (session?.user as any)?.role || 'staff'
+  const userEmail = session?.user?.email || ''
+  
+  const roleLabelMap: Record<string, string> = {
+    owner: 'Owner',
+    manager: 'Manager',
+    kitchen: 'Kitchen Staff',
+    super_admin: 'Super Admin',
+  }
+  const displayRoleLabel = roleLabelMap[userRole] || 'Staff'
+  const userInitial = displayRoleLabel.charAt(0).toUpperCase()
 
   // State for desktop sidebar rail (collapsed vs expanded)
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
@@ -69,13 +83,7 @@ export function DashboardLayout({
   }, [])
 
   const handleLogout = async () => {
-    const supabase = createClient()
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error('Logout failed:', error.message)
-    }
-    router.push('/dashboard/login')
-    router.refresh()
+    await signOut({ callbackUrl: '/dashboard/login' })
   }
 
   const mainNavItems = [
@@ -353,11 +361,11 @@ export function DashboardLayout({
               <>
                 <div className="flex items-center space-x-2 truncate">
                   <div className="w-5 h-5 rounded-full bg-[#18191a] border border-[#34343a] text-[#d0d6e0] flex items-center justify-center text-[10px] font-mono font-medium flex-shrink-0">
-                    S
+                    {userInitial}
                   </div>
                   <div className="flex flex-col truncate leading-none">
-                    <span className="text-[11px] text-[#f7f8f8] font-medium truncate">Kitchen Staff</span>
-                    <span className="text-[9px] text-[#8a8f98] font-mono truncate">Online</span>
+                    <span className="text-[11px] text-[#f7f8f8] font-medium truncate">{displayRoleLabel}</span>
+                    <span className="text-[9px] text-[#8a8f98] font-mono truncate">{userEmail || 'Online'}</span>
                   </div>
                 </div>
 

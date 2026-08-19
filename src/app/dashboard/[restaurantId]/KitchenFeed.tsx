@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { updateOrderStatusAction, markOrderPaidAction } from './actions'
 
 interface MenuItem {
   name: string
@@ -168,8 +169,6 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
 
   // 3. Handle manual order status updates from buttons
   const handleUpdateStatus = async (orderId: string, newStatus: Order['status']) => {
-    const supabase = createClient()
-
     const originalOrders = [...orders]
     setOrders((prev) => {
       if (newStatus === 'served' || newStatus === 'cancelled') {
@@ -178,17 +177,14 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
       return prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
     })
 
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: newStatus })
-      .eq('id', orderId)
+    const res = await updateOrderStatusAction(restaurantId, orderId, newStatus)
 
-    if (error) {
-      console.error('Failed to update order status in Supabase:', error)
+    if (res?.error) {
+      console.error('Failed to update order status:', res.error)
       setOrders(originalOrders)
       setUpdateError({
         orderId,
-        message: `Failed to update status to "${newStatus}": ${error.message}`,
+        message: `Failed to update status to "${newStatus}": ${res.error}`,
       })
     } else {
       setUpdateError(null)
@@ -197,24 +193,19 @@ export function KitchenFeed({ restaurantId, restaurantName, initialOrders }: Kit
 
   // Handle manual payment status updates for Cash At Counter orders
   const handleMarkPaidCash = async (orderId: string) => {
-    const supabase = createClient()
-
     const originalOrders = [...orders]
     setOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, payment_status: 'paid' as const } : o))
     )
 
-    const { error } = await supabase
-      .from('orders')
-      .update({ payment_status: 'paid' })
-      .eq('id', orderId)
+    const res = await markOrderPaidAction(restaurantId, orderId)
 
-    if (error) {
-      console.error('Failed to update payment status in Supabase:', error)
+    if (res?.error) {
+      console.error('Failed to update payment status:', res.error)
       setOrders(originalOrders)
       setUpdateError({
         orderId,
-        message: `Failed to mark order as paid: ${error.message}`,
+        message: `Failed to mark order as paid: ${res.error}`,
       })
     } else {
       setUpdateError(null)

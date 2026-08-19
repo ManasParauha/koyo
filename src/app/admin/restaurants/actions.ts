@@ -1,6 +1,7 @@
 'use server'
 
-import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
+import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
 
 // Helper: Generate a secure random temporary password
@@ -13,25 +14,18 @@ function generateTempPassword(): string {
   return pass
 }
 
-// Helper: Ensure the caller is a platform super admin
+// Helper: Ensure caller is authenticated as a platform super admin via Auth.js session
 async function verifySuperAdminAccess() {
-  const userSupabase = await createClient()
-  const { data: { user } } = await userSupabase.auth.getUser()
-  if (!user) {
+  const session = await auth()
+  if (!session?.user) {
     throw new Error('Unauthorized. Please log in.')
   }
 
-  const { data: superAdmin, error } = await userSupabase
-    .from('super_admins')
-    .select('id')
-    .eq('id', user.id)
-    .single()
-
-  if (error || !superAdmin) {
+  if (session.user.role !== 'super_admin') {
     throw new Error('Forbidden. Super-admin privileges required.')
   }
 
-  return { user }
+  return { session }
 }
 
 export interface CreateRestaurantInput {
@@ -50,11 +44,10 @@ export async function createRestaurantAction(data: CreateRestaurantInput) {
   if (!data.owner_email.trim()) return { error: 'Owner email address is required.' }
 
   try {
-    const supabase = await createClient()
     const adminSupabase = await createAdminClient()
 
-    // 3. Create restaurant row
-    const { data: restaurant, error: restError } = await supabase
+    // 3. Create restaurant row using admin client
+    const { data: restaurant, error: restError } = await adminSupabase
       .from('restaurants')
       .insert({
         name: data.name.trim(),
@@ -71,7 +64,7 @@ export async function createRestaurantAction(data: CreateRestaurantInput) {
     // 4. Generate owner credentials
     const tempPassword = generateTempPassword()
 
-    // 5. Create Auth user via service role
+    // 5. Create Auth user via Supabase service role
     const { data: authUser, error: authError } = await adminSupabase.auth.admin.createUser({
       email: data.owner_email.trim().toLowerCase(),
       password: tempPassword,
@@ -80,12 +73,12 @@ export async function createRestaurantAction(data: CreateRestaurantInput) {
 
     if (authError || !authUser.user) {
       // Cleanup restaurant row on failure to avoid orphaned records
-      await supabase.from('restaurants').delete().eq('id', restaurant.id)
+      await adminSupabase.from('restaurants').delete().eq('id', restaurant.id)
       throw new Error(authError?.message || 'Failed to create auth user for the owner.')
     }
 
     // 6. Link in staff table with owner role
-    const { error: staffError } = await supabase
+    const { error: staffError } = await adminSupabase
       .from('staff')
       .insert({
         id: authUser.user.id,
@@ -96,7 +89,7 @@ export async function createRestaurantAction(data: CreateRestaurantInput) {
     if (staffError) {
       // Cleanup auth user and restaurant row on failure
       await adminSupabase.auth.admin.deleteUser(authUser.user.id)
-      await supabase.from('restaurants').delete().eq('id', restaurant.id)
+      await adminSupabase.from('restaurants').delete().eq('id', restaurant.id)
       throw new Error(staffError.message || 'Failed to link owner profile.')
     }
 
@@ -116,7 +109,7 @@ export async function createRestaurantAction(data: CreateRestaurantInput) {
 export interface CreateStaffInput {
   restaurantId: string
   email: string
-  role: 'staff' | 'owner'
+  role: 'owner' | 'manager' | 'kitchen'
 }
 
 export async function createStaffAction(data: CreateStaffInput) {
@@ -126,11 +119,12 @@ export async function createStaffAction(data: CreateStaffInput) {
   // 2. Validate inputs
   if (!data.restaurantId) return { error: 'Restaurant ID is required.' }
   if (!data.email.trim()) return { error: 'Staff email address is required.' }
-  if (!['staff', 'owner'].includes(data.role)) return { error: 'Invalid staff role.' }
+  if (!['owner', 'manager', 'kitchen'].includes(data.role)) {
+    return { error: 'Invalid staff role specified.' }
+  }
 
   try {
     const adminSupabase = await createAdminClient()
-    const supabase = await createClient()
 
     // 3. Generate staff credentials
     const tempPassword = generateTempPassword()
@@ -147,7 +141,7 @@ export async function createStaffAction(data: CreateStaffInput) {
     }
 
     // 5. Link in staff table
-    const { error: staffError } = await supabase
+    const { error: staffError } = await adminSupabase
       .from('staff')
       .insert({
         id: authUser.user.id,
