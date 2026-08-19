@@ -1,5 +1,5 @@
 import React from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { verifySession } from '@/lib/dal'
 import AdminNav from './AdminNav'
 
 export const metadata = {
@@ -12,19 +12,17 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const session = await verifySession()
 
-  if (!user) {
+  // On admin login page or unauthenticated state, render clean children without layout wrapper
+  if (!session?.user || session.user.role !== 'super_admin') {
     return <>{children}</>
   }
 
   return (
     <div className="min-h-screen bg-canvas text-ink-muted font-sans flex flex-col antialiased selection:bg-primary/20 selection:text-ink">
       {/* Top Navbar */}
-      <AdminNav email={user?.email || null} />
+      <AdminNav email={session.user.email || null} />
 
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import AddStaffForm from '../AddStaffForm'
 
 interface PageProps {
@@ -15,11 +15,10 @@ export const dynamic = 'force-dynamic'
 export default async function RestaurantDetailPage({ params }: PageProps) {
   const { restaurantId } = await params
 
-  const supabase = await createClient()
   const adminSupabase = await createAdminClient()
 
   // 1. Fetch restaurant info
-  const { data: restaurant, error: restError } = await supabase
+  const { data: restaurant, error: restError } = await adminSupabase
     .from('restaurants')
     .select('*')
     .eq('id', restaurantId)
@@ -30,7 +29,7 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   }
 
   // 2. Fetch tables
-  const { data: tables, error: tablesError } = await supabase
+  const { data: tables, error: tablesError } = await adminSupabase
     .from('tables')
     .select('*')
     .eq('restaurant_id', restaurantId)
@@ -41,7 +40,7 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
   }
 
   // 3. Fetch menu items count
-  const { count: menuCount, error: menuError } = await supabase
+  const { count: menuCount, error: menuError } = await adminSupabase
     .from('menu_items')
     .select('*', { count: 'exact', head: true })
     .eq('restaurant_id', restaurantId)
@@ -50,7 +49,7 @@ export default async function RestaurantDetailPage({ params }: PageProps) {
     console.error('Error fetching menu items count:', menuError)
   }
 
-  // 4. Fetch linked staff accounts via admin client & our custom view
+  // 4. Fetch linked staff accounts via admin client & custom view
   const { data: staffList, error: staffError } = await adminSupabase
     .from('staff_details')
     .select('*')

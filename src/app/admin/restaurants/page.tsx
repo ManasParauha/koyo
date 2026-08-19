@@ -1,11 +1,11 @@
 import React from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import RestaurantsClient, { RestaurantSummary } from './RestaurantsClient'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminRestaurantsPage() {
-  const supabase = await createClient()
+  const supabase = await createAdminClient()
 
   // Fetch all restaurants with nested counts of tables and menu items
   const { data: restaurants, error } = await supabase
