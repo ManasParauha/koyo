@@ -5,9 +5,10 @@ import { changePasswordAction } from './actions'
 
 interface ChangePasswordFormProps {
   userEmail: string
+  hideHeader?: boolean
 }
 
-export function ChangePasswordForm({ userEmail }: ChangePasswordFormProps) {
+export function ChangePasswordForm({ userEmail, hideHeader = false }: ChangePasswordFormProps) {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -70,16 +71,18 @@ export function ChangePasswordForm({ userEmail }: ChangePasswordFormProps) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className={hideHeader ? 'space-y-6' : 'max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6'}>
       {/* Header Banner */}
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold text-[#f7f8f8] tracking-tight font-display">
-          Account Settings
-        </h2>
-        <p className="text-xs sm:text-sm text-[#8a8f98]">
-          Manage your security preferences and update your account password for <span className="font-mono text-[#d0d6e0]">{userEmail}</span>.
-        </p>
-      </div>
+      {!hideHeader && (
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold text-[#f7f8f8] tracking-tight font-display">
+            Account Settings
+          </h2>
+          <p className="text-xs sm:text-sm text-[#8a8f98]">
+            Manage your security preferences and update your account password for <span className="font-mono text-[#d0d6e0]">{userEmail}</span>.
+          </p>
+        </div>
+      )}
 
       {/* Change Password Card */}
       <div className="bg-[#0f1011] border border-[#23252a] rounded-xl p-5 sm:p-6 shadow-xl space-y-5">
