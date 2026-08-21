@@ -136,29 +136,7 @@ export default auth((req) => {
 
       if (subRoute === 'analytics' || subRoute === 'menu' || subRoute === 'tables') {
         if (!['owner', 'manager'].includes(user.role)) {
-          return new NextResponse(
-            `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="utf-8">
-              <title>403 Forbidden - Role Restricted</title>
-              <style>
-                body { background-color: #010102; color: #f7f8f8; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-                .card { max-width: 400px; background: #0f1011; border: 1px solid #23252a; padding: 32px; border-radius: 12px; text-align: center; }
-                p { color: #8a8f98; }
-                a { color: #5e6ad2; text-decoration: none; font-weight: 500; }
-              </style>
-            </head>
-            <body>
-              <div class="card">
-                <h2>Forbidden Action</h2>
-                <p>Kitchen Staff role does not have permission to view ${subRoute}. Requires Owner or Manager access.</p>
-                <a href="/dashboard/${targetRestaurantId}">Return to Kitchen Feed</a>
-              </div>
-            </body>
-            </html>`,
-            { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } }
-          )
+          return NextResponse.redirect(new URL(`/dashboard/${targetRestaurantId}`, req.url))
         }
       }
     }

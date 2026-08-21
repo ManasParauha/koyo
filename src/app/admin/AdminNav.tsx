@@ -44,6 +44,16 @@ export default function AdminNav({ email }: AdminNavProps) {
             >
               Restaurants
             </Link>
+            <Link
+              href="/admin/settings"
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                pathname.startsWith('/admin/settings')
+                  ? 'bg-surface-2 text-ink border border-hairline'
+                  : 'text-ink-subtle hover:text-ink hover:bg-surface-1'
+              }`}
+            >
+              Settings
+            </Link>
           </nav>
         )}
       </div>

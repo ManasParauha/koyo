@@ -8,7 +8,7 @@ import { signOut, useSession } from 'next-auth/react'
 interface DashboardLayoutProps {
   restaurantId: string
   restaurantName: string
-  activePage: 'kitchen' | 'tables' | 'menu' | 'analytics' | 'print'
+  activePage: 'kitchen' | 'tables' | 'menu' | 'analytics' | 'print' | 'settings'
   activeOrdersCount?: number
   isConnected?: boolean
   searchQuery?: string
@@ -91,6 +91,7 @@ export function DashboardLayout({
       id: 'kitchen',
       label: 'Kitchen Feed',
       href: `/dashboard/${restaurantId}`,
+      roles: ['owner', 'manager', 'kitchen', 'super_admin'],
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -102,6 +103,7 @@ export function DashboardLayout({
       id: 'tables',
       label: 'Manage Tables',
       href: `/dashboard/${restaurantId}/tables`,
+      roles: ['owner', 'manager', 'super_admin'],
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
@@ -112,6 +114,7 @@ export function DashboardLayout({
       id: 'menu',
       label: 'Manage Menu',
       href: `/dashboard/${restaurantId}/menu`,
+      roles: ['owner', 'manager', 'super_admin'],
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -125,6 +128,7 @@ export function DashboardLayout({
       id: 'analytics',
       label: 'Analytics',
       href: `/dashboard/${restaurantId}/analytics`,
+      roles: ['owner', 'manager', 'super_admin'],
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
@@ -135,13 +139,33 @@ export function DashboardLayout({
       id: 'print',
       label: 'Print QR Codes',
       href: `/dashboard/${restaurantId}/tables/print`,
+      roles: ['owner', 'manager', 'super_admin'],
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
           <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
         </svg>
       ),
     },
+    {
+      id: 'settings',
+      label: 'Settings',
+      href: `/dashboard/${restaurantId}/settings`,
+      roles: ['owner', 'manager', 'kitchen', 'super_admin'],
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      ),
+    },
   ]
+
+  const filteredMainNavItems = mainNavItems.filter((item) =>
+    item.roles ? item.roles.includes(userRole) : true
+  )
+  const filteredInsightNavItems = insightNavItems.filter((item) =>
+    item.roles ? item.roles.includes(userRole) : true
+  )
 
   const getPageTitle = () => {
     switch (activePage) {
@@ -155,6 +179,8 @@ export function DashboardLayout({
         return 'Analytics Overview'
       case 'print':
         return 'Print QR Codes'
+      case 'settings':
+        return 'Account Settings'
       default:
         return 'Dashboard'
     }
@@ -227,103 +253,107 @@ export function DashboardLayout({
           {/* Main Navigation List */}
           <div className="p-2 space-y-4">
             {/* Section 1: Main */}
-            <div>
-              {!isCollapsed && (
-                <div className="text-[10px] font-mono tracking-wider text-[#62666d] uppercase px-2.5 py-1 font-medium">
-                  Workspace
-                </div>
-              )}
-              <nav className="space-y-0.5">
-                {mainNavItems.map((item) => {
-                  const isActive = activePage === item.id
+            {filteredMainNavItems.length > 0 && (
+              <div>
+                {!isCollapsed && (
+                  <div className="text-[10px] font-mono tracking-wider text-[#62666d] uppercase px-2.5 py-1 font-medium">
+                    Workspace
+                  </div>
+                )}
+                <nav className="space-y-0.5">
+                  {filteredMainNavItems.map((item) => {
+                    const isActive = activePage === item.id
 
-                  return (
-                    <Link
-                      key={item.id}
-                      href={item.href}
-                      onClick={() => setIsMobileOpen(false)}
-                      title={isCollapsed ? item.label : undefined}
-                      className={`
-                        relative flex items-center h-8 px-2.5 rounded-md text-xs font-medium transition-all duration-150 group
-                        focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5e6ad2]
-                        ${
-                          isActive
-                            ? 'bg-[#18191a] text-[#f7f8f8] border border-[#2b2d35] font-semibold shadow-sm'
-                            : 'text-[#8a8f98] hover:bg-[#141516] hover:text-[#f7f8f8] border border-transparent'
-                        }
-                      `}
-                    >
-                      {/* Active indicator bar */}
-                      {isActive && (
-                        <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] bg-[#5e6ad2] rounded-full" />
-                      )}
-
-                      <span
-                        className={`flex-shrink-0 ${
-                          isActive ? 'text-[#5e6ad2]' : 'text-[#8a8f98] group-hover:text-[#d0d6e0]'
-                        }`}
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.href}
+                        onClick={() => setIsMobileOpen(false)}
+                        title={isCollapsed ? item.label : undefined}
+                        className={`
+                          relative flex items-center h-8 px-2.5 rounded-md text-xs font-medium transition-all duration-150 group
+                          focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5e6ad2]
+                          ${
+                            isActive
+                              ? 'bg-[#18191a] text-[#f7f8f8] border border-[#2b2d35] font-semibold shadow-sm'
+                              : 'text-[#8a8f98] hover:bg-[#141516] hover:text-[#f7f8f8] border border-transparent'
+                          }
+                        `}
                       >
-                        {item.icon}
-                      </span>
+                        {/* Active indicator bar */}
+                        {isActive && (
+                          <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] bg-[#5e6ad2] rounded-full" />
+                        )}
 
-                      {!isCollapsed && <span className="ml-2.5 truncate">{item.label}</span>}
-
-                      {!isCollapsed && item.badge !== null && item.badge !== undefined && (
-                        <span className="ml-auto font-mono text-[10px] px-1.5 py-0.2 rounded bg-[#1e2025] text-[#d0d6e0] border border-[#2d2f38] font-medium">
-                          {item.badge}
+                        <span
+                          className={`flex-shrink-0 ${
+                            isActive ? 'text-[#5e6ad2]' : 'text-[#8a8f98] group-hover:text-[#d0d6e0]'
+                          }`}
+                        >
+                          {item.icon}
                         </span>
-                      )}
-                    </Link>
-                  )
-                })}
-              </nav>
-            </div>
+
+                        {!isCollapsed && <span className="ml-2.5 truncate">{item.label}</span>}
+
+                        {!isCollapsed && item.badge !== null && item.badge !== undefined && (
+                          <span className="ml-auto font-mono text-[10px] px-1.5 py-0.2 rounded bg-[#1e2025] text-[#d0d6e0] border border-[#2d2f38] font-medium">
+                            {item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    )
+                  })}
+                </nav>
+              </div>
+            )}
 
             {/* Section 2: Insights */}
-            <div>
-              {!isCollapsed && (
-                <div className="text-[10px] font-mono tracking-wider text-[#62666d] uppercase px-2.5 py-1 font-medium">
-                  Insights & QR
-                </div>
-              )}
-              <nav className="space-y-0.5">
-                {insightNavItems.map((item) => {
-                  const isActive = activePage === item.id
+            {filteredInsightNavItems.length > 0 && (
+              <div>
+                {!isCollapsed && (
+                  <div className="text-[10px] font-mono tracking-wider text-[#62666d] uppercase px-2.5 py-1 font-medium">
+                    Insights & QR
+                  </div>
+                )}
+                <nav className="space-y-0.5">
+                  {filteredInsightNavItems.map((item) => {
+                    const isActive = activePage === item.id
 
-                  return (
-                    <Link
-                      key={item.id}
-                      href={item.href}
-                      onClick={() => setIsMobileOpen(false)}
-                      title={isCollapsed ? item.label : undefined}
-                      className={`
-                        relative flex items-center h-8 px-2.5 rounded-md text-xs font-medium transition-all duration-150 group
-                        focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5e6ad2]
-                        ${
-                          isActive
-                            ? 'bg-[#18191a] text-[#f7f8f8] border border-[#2b2d35] font-semibold shadow-sm'
-                            : 'text-[#8a8f98] hover:bg-[#141516] hover:text-[#f7f8f8] border border-transparent'
-                        }
-                      `}
-                    >
-                      {isActive && (
-                        <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] bg-[#5e6ad2] rounded-full" />
-                      )}
-
-                      <span
-                        className={`flex-shrink-0 ${
-                          isActive ? 'text-[#5e6ad2]' : 'text-[#8a8f98] group-hover:text-[#d0d6e0]'
-                        }`}
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.href}
+                        onClick={() => setIsMobileOpen(false)}
+                        title={isCollapsed ? item.label : undefined}
+                        className={`
+                          relative flex items-center h-8 px-2.5 rounded-md text-xs font-medium transition-all duration-150 group
+                          focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5e6ad2]
+                          ${
+                            isActive
+                              ? 'bg-[#18191a] text-[#f7f8f8] border border-[#2b2d35] font-semibold shadow-sm'
+                              : 'text-[#8a8f98] hover:bg-[#141516] hover:text-[#f7f8f8] border border-transparent'
+                          }
+                        `}
                       >
-                        {item.icon}
-                      </span>
+                        {isActive && (
+                          <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] bg-[#5e6ad2] rounded-full" />
+                        )}
 
-                      {!isCollapsed && <span className="ml-2.5 truncate">{item.label}</span>}
-                    </Link>
-                  )
-                })}
-              </nav>
-            </div>
+                        <span
+                          className={`flex-shrink-0 ${
+                            isActive ? 'text-[#5e6ad2]' : 'text-[#8a8f98] group-hover:text-[#d0d6e0]'
+                          }`}
+                        >
+                          {item.icon}
+                        </span>
+
+                        {!isCollapsed && <span className="ml-2.5 truncate">{item.label}</span>}
+                      </Link>
+                    )
+                  })}
+                </nav>
+              </div>
+            )}
           </div>
         </div>
 
@@ -369,17 +399,31 @@ export function DashboardLayout({
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="p-1 text-[#8a8f98] hover:text-[#ff4d4d] hover:bg-[#231718] rounded transition-colors cursor-pointer flex-shrink-0"
-                  title="Sign out"
-                  aria-label="Sign out"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                </button>
+                <div className="flex items-center space-x-1 flex-shrink-0">
+                  <Link
+                    href={`/dashboard/${restaurantId}/settings`}
+                    className="p-1 text-[#8a8f98] hover:text-[#5e6ad2] hover:bg-[#18191a] rounded transition-colors"
+                    title="Account Settings"
+                    aria-label="Account Settings"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="p-1 text-[#8a8f98] hover:text-[#ff4d4d] hover:bg-[#231718] rounded transition-colors cursor-pointer"
+                    title="Sign out"
+                    aria-label="Sign out"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </button>
+                </div>
               </>
             ) : (
               <button
